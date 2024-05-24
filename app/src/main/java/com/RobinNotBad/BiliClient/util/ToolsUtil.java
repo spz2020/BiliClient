@@ -86,24 +86,17 @@ public class ToolsUtil {
         return "fail";
     }
 
-    public static void setCopy(TextView textView,Context context){
+    public static void setCopy(TextView textView, Context context, String customText){
         if (SharedPreferencesUtil.getBoolean("copy_enable", true)) {
             textView.setOnLongClickListener(view1 -> {
                 Intent intent = new Intent(context, CopyTextActivity.class);
-                intent.putExtra("content", textView.getText().toString());
+                intent.putExtra("content", customText == null ? textView.getText().toString() : customText);
                 context.startActivity(intent);
                 return true;
             });
         }
     }
-    public static void setCopy(TextView textView,Context context,String customText){
-        if (SharedPreferencesUtil.getBoolean("copy_enable", true)) {
-            textView.setOnLongClickListener(view1 -> {
-                Intent intent = new Intent(context, CopyTextActivity.class);
-                intent.putExtra("content", customText);
-                context.startActivity(intent);
-                return true;
-            });
-        }
+    public static void setCopy(TextView textView, Context context){
+        setCopy(textView, context, null);
     }
 }
