@@ -374,7 +374,7 @@ public class VideoInfoFragment extends Fragment {
 
         relay.setOnClickListener((view1) -> {
             Intent intent = new Intent();
-            intent.setClass(requireContext(), SendDynamicActivity.class);
+            intent.setClass(requireContext(), SendDynamicActivity.class).putExtra("video", videoInfo);
             writeDynamicLauncher.launch(intent);
         });
     }
