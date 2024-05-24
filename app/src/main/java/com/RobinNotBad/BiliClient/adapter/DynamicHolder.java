@@ -35,6 +35,7 @@ import com.RobinNotBad.BiliClient.util.CenterThreadPool;
 import com.RobinNotBad.BiliClient.util.EmoteUtil;
 import com.RobinNotBad.BiliClient.util.GlideUtil;
 import com.RobinNotBad.BiliClient.util.MsgUtil;
+import com.RobinNotBad.BiliClient.util.ToolsUtil;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
@@ -86,6 +87,7 @@ public class DynamicHolder extends RecyclerView.ViewHolder{
 
     @SuppressLint("SetTextI18n")
     public void showDynamic(Dynamic dynamic, Context context, boolean clickable){    //公用的显示函数 这样修改和调用都方便
+        ToolsUtil.setCopy(content, context);
         username.setText(dynamic.userInfo.name);
         if(pubdate!=null) pubdate.setText(dynamic.pubTime);
         if(dynamic.content != null && !dynamic.content.isEmpty()) {

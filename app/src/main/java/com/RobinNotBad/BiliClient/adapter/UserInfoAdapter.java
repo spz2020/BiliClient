@@ -192,6 +192,7 @@ public class UserInfoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             userAvatar = itemView.findViewById(R.id.userAvatar);
             followBtn = itemView.findViewById(R.id.followBtn);
             msgBtn = itemView.findViewById(R.id.msgBtn);
+            ToolsUtil.setCopy(itemView.getContext(), userDesc, userNotice);
         }
 
         public void setFollowed(boolean followed){

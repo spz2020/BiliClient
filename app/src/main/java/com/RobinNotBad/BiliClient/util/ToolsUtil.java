@@ -96,7 +96,14 @@ public class ToolsUtil {
             });
         }
     }
+
     public static void setCopy(TextView textView, Context context){
         setCopy(textView, context, null);
+    }
+
+    public static void setCopy(Context context, TextView... textViews){
+        for (TextView textView : textViews) {
+            setCopy(textView, context, null);
+        }
     }
 }
