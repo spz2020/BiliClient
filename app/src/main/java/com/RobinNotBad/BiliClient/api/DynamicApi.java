@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import com.RobinNotBad.BiliClient.model.ArticleCard;
 import com.RobinNotBad.BiliClient.model.Dynamic;
 import com.RobinNotBad.BiliClient.model.Emote;
+import com.RobinNotBad.BiliClient.model.Stats;
 import com.RobinNotBad.BiliClient.model.UserInfo;
 import com.RobinNotBad.BiliClient.model.VideoCard;
 import com.RobinNotBad.BiliClient.util.NetWorkUtil;
@@ -128,6 +129,27 @@ public class DynamicApi {
             return -1;
         }
         return -1;
+    }
+
+    /**
+     * 动态点赞/取消赞
+     * @param dyid 动态id
+     * @param up 是否为点赞
+     * @return resultCode
+     */
+    public static int likeDynamic(long dyid, boolean up) throws IOException {
+        String url = "https://api.vc.bilibili.com/dynamic_like/v1/dynamic_like/thumb";
+        Response resp = Objects.requireNonNull(NetWorkUtil.post(url, new NetWorkUtil.FormData()
+                .put("dynamic_id", dyid)
+                .put("up", up ? 1 : 2)
+                .put("csrf_token", SharedPreferencesUtil.getString("csrf",""))
+                .toString(), NetWorkUtil.webHeaders));
+        try {
+            JSONObject respBody = new JSONObject(resp.body().string());
+            return respBody.getInt("code");
+        } catch (JSONException ignored) {
+            return -1;
+        }
     }
 
     public static long getDynamicList(ArrayList<Dynamic> dynamicList, long offset, long mid) throws IOException, JSONException {
@@ -287,6 +309,19 @@ public class DynamicApi {
                 }
                 else Log.e("debug-dynamic-addi",module_additional.getString("type"));
             }
+        }
+
+        // 动态Stats
+        if (modules.has("module_stat") && !modules.isNull("module_stat")) {
+            JSONObject module_stat = modules.getJSONObject("module_stat");
+            JSONObject like = module_stat.getJSONObject("like");
+            Stats stats = new Stats();
+            stats.like = like.getInt("count");
+            stats.liked = like.getBoolean("status");
+            stats.like_disabled = like.getBoolean("forbidden");
+            // TODO 转发&回复
+
+            dynamic.stats = stats;
         }
 
         if(dynamic_json.has("orig") && !dynamic_json.isNull("orig")){

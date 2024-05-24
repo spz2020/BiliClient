@@ -140,11 +140,10 @@ public class ReplyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
             replyHolder.likeCount.setText(String.valueOf(replyList.get(realPosition).likeCount));
 
-            if(replyList.get(realPosition).liked){           //这里，还有下面，一定要加else！否则会导致错乱
+            if (replyList.get(realPosition).liked){           //这里，还有下面，一定要加else！否则会导致错乱
                 replyHolder.likeCount.setTextColor(Color.rgb(0xfe,0x67,0x9a));
                 replyHolder.likeCount.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(context,R.drawable.icon_liked),null,null,null);
-            }
-            else {
+            } else {
                 replyHolder.likeCount.setTextColor(Color.rgb(0xff,0xff,0xff));
                 replyHolder.likeCount.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(context,R.drawable.icon_like),null,null,null);
             }
