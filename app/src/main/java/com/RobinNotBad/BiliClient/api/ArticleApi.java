@@ -160,4 +160,23 @@ public class ArticleApi {
             return -1;
         }
     }
+
+    /**
+     * 取消收藏专栏
+     * @param cvid CVID
+     * @return 返回码
+     */
+    public static int delFavorite(long cvid) throws IOException {
+        String url = "https://api.bilibili.com/x/article/favorites/del";
+        Response resp = Objects.requireNonNull(NetWorkUtil.post(url, new NetWorkUtil.FormData()
+                .put("id", cvid)
+                .put("csrf", SharedPreferencesUtil.getString("csrf",""))
+                .toString(), NetWorkUtil.webHeaders));
+        try {
+            JSONObject respBody = new JSONObject(resp.body().string());
+            return respBody.getInt("code");
+        } catch (JSONException ignored) {
+            return -1;
+        }
+    }
 }
