@@ -88,7 +88,6 @@ public class VideoInfoActivity extends BaseActivity {
         findViewById(R.id.top).setOnClickListener(view -> finish());
         loading.setVisibility(View.VISIBLE);
         pageName.setText("视频详情");
-        Log.e("VideoInfoActivity",SharedPreferencesUtil.getString(SharedPreferencesUtil.cookies,""));
 
         CenterThreadPool.run(() -> {
             JSONObject data;
@@ -96,6 +95,12 @@ public class VideoInfoActivity extends BaseActivity {
                 VideoInfo videoInfo;
                 if (TextUtils.isEmpty(bvid)) data = VideoInfoApi.getJsonByAid(aid);
                 else data = VideoInfoApi.getJsonByBvid(bvid);
+                if (data == null) {
+                    loading.setImageResource(R.mipmap.loading_2233_error);
+                    runOnUiThread(() ->
+                            MsgUtil.toast("获取信息失败！\n可能是视频不存在？", this));
+                    return;
+                }
                 videoInfo = VideoInfoApi.getInfoByJson(data);
 
                 fragmentList = new ArrayList<>(3);
@@ -119,6 +124,7 @@ public class VideoInfoActivity extends BaseActivity {
             } catch (Exception e) {
                 runOnUiThread(() -> {
                     loading.setImageResource(R.mipmap.loading_2233_error);
+                    e.printStackTrace();
                     MsgUtil.err(e, this);
                 });
             }

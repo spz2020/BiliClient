@@ -84,6 +84,7 @@ public class UserInfoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             userInfoHolder.userDesc.setText(userInfo.sign);
             if (!userInfo.notice.isEmpty()) userInfoHolder.userNotice.setText(userInfo.notice);
             else userInfoHolder.userNotice.setVisibility(View.GONE);
+            ToolsUtil.setLink(userInfoHolder.userDesc, userInfoHolder.userDesc);
             userInfoHolder.userFans.setText("Lv" + userInfo.level + "\n" + ToolsUtil.toWan(userInfo.fans) + "粉丝");
 
             if(userInfo.official != 0) {

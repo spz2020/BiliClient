@@ -272,6 +272,7 @@ public class VideoInfoFragment extends Fragment {
 
         ToolsUtil.setCopy(description, requireContext());
         ToolsUtil.setCopy(bvidText, requireContext());
+        ToolsUtil.setLink(description);
 
         play.setOnClickListener(view1 -> play());
         play.setOnLongClickListener(view1 -> {

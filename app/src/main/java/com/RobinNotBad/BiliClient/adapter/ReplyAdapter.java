@@ -123,6 +123,7 @@ public class ReplyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             String text = replyList.get(realPosition).message;
             replyHolder.message.setText(text);  //防止加载速度慢时露出鸡脚
             ToolsUtil.setCopy(replyHolder.message,context);
+            ToolsUtil.setLink(replyHolder.message);
             if(replyList.get(realPosition).emote != null) {
                 CenterThreadPool.run(() -> {
                     try {
@@ -137,6 +138,7 @@ public class ReplyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     }
                 });
             }
+            ToolsUtil.setLink(replyHolder.message);
 
             replyHolder.likeCount.setText(String.valueOf(replyList.get(realPosition).likeCount));
 

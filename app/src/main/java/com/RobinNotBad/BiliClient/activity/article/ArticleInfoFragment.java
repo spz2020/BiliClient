@@ -66,6 +66,12 @@ public class ArticleInfoFragment extends Fragment {
             try {
                 articleInfo = ArticleApi.getArticle(cvid);
 
+                if (articleInfo == null) {
+                    requireActivity().runOnUiThread(() -> MsgUtil.toast("获取信息失败！\n可能是专栏不存在？", requireContext()));
+                    requireActivity().finish();
+                    return;
+                }
+
                 //专栏分为html和json两种格式
                 if(articleInfo.content.startsWith("{")) {
                     JSONObject jsonObject = new JSONObject(articleInfo.content);

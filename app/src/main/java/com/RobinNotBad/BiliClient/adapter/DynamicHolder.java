@@ -88,6 +88,7 @@ public class DynamicHolder extends RecyclerView.ViewHolder{
     @SuppressLint("SetTextI18n")
     public void showDynamic(Dynamic dynamic, Context context, boolean clickable){    //公用的显示函数 这样修改和调用都方便
         ToolsUtil.setCopy(content, context);
+        ToolsUtil.setLink(content);
         username.setText(dynamic.userInfo.name);
         if(pubdate!=null) pubdate.setText(dynamic.pubTime);
         if(dynamic.content != null && !dynamic.content.isEmpty()) {

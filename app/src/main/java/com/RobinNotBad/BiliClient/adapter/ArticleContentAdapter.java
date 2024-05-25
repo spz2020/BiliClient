@@ -84,6 +84,7 @@ public class ArticleContentAdapter extends RecyclerView.Adapter<ArticleContentAd
                         break;
                 }
                 ToolsUtil.setCopy(context, textView);
+                ToolsUtil.setLink(textView);
                 break;
 
             case 1:

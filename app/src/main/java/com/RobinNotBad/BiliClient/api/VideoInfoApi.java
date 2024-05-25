@@ -24,13 +24,13 @@ public class VideoInfoApi {
     public static JSONObject getJsonByBvid(String bvid) throws IOException, JSONException {  //通过bvid获取json
         String url = "https://api.bilibili.com/x/web-interface/view?bvid=" + bvid;
         JSONObject result = NetWorkUtil.getJson(url);
-        return result.getJSONObject("data");
+        return result.has("data") ? result.getJSONObject("data") : null;
     }
 
     public static JSONObject getJsonByAid(long aid) throws IOException, JSONException {  //通过aid获取json
         String url = "https://api.bilibili.com/x/web-interface/view?aid=" + aid;
         JSONObject result = NetWorkUtil.getJson(url);
-        return result.getJSONObject("data");
+        return result.has("data") ? result.getJSONObject("data") : null;
     }
 
     

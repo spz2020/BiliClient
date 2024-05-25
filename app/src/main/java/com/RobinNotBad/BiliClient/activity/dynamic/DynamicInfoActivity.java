@@ -65,7 +65,7 @@ public class DynamicInfoActivity extends BaseActivity {
                 });
 
             } catch (Exception e) {
-                MsgUtil.err(e,this);
+                runOnUiThread(() -> MsgUtil.err(e,this));
             }
         });
 
