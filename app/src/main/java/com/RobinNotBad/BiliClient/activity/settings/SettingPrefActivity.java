@@ -12,7 +12,7 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 public class SettingPrefActivity extends BaseActivity {
 
     private SwitchMaterial back_disable,fav_single,fav_notice, video_tags, video_related,
-            myspace_creativecenter,menu_popular,menu_precious,copy_enable, click_image_play_enable;
+            myspace_creativecenter,menu_popular,menu_precious,copy_enable, click_image_play_enable, text_link_enable;
 
     @SuppressLint({"MissingInflatedId", "SetTextI18n"})
     @Override
@@ -50,6 +50,9 @@ public class SettingPrefActivity extends BaseActivity {
 
         click_image_play_enable = findViewById(R.id.click_image_play_enable);
         click_image_play_enable.setChecked(SharedPreferencesUtil.getBoolean(SharedPreferencesUtil.click_image_play_enable, false));
+
+        text_link_enable = findViewById(R.id.text_link_enable);
+        text_link_enable.setChecked(SharedPreferencesUtil.getBoolean(SharedPreferencesUtil.LINK_ENABLE, true));
     }
 
     private void save() {
@@ -63,6 +66,7 @@ public class SettingPrefActivity extends BaseActivity {
         SharedPreferencesUtil.putBoolean("menu_precious", menu_precious.isChecked());
         SharedPreferencesUtil.putBoolean("copy_enable", copy_enable.isChecked());
         SharedPreferencesUtil.putBoolean(SharedPreferencesUtil.click_image_play_enable, click_image_play_enable.isChecked());
+        SharedPreferencesUtil.putBoolean(SharedPreferencesUtil.LINK_ENABLE, text_link_enable.isChecked());
     }
 
     @Override

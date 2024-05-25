@@ -130,7 +130,7 @@ public class ToolsUtil {
     private static final Pattern avPattern = Pattern.compile("av\\d{1,10}");
     private static final Pattern cvPattern = Pattern.compile("cv\\d{1,10}");
     public static void setLink(TextView... textViews) {
-        if (!SharedPreferencesUtil.getBoolean("link_enable", true)) return;
+        if (!SharedPreferencesUtil.getBoolean(SharedPreferencesUtil.LINK_ENABLE, true)) return;
         for (TextView textView : textViews) {
             if (TextUtils.isEmpty(textView.getText())) continue;
             String text = textView.getText().toString();
