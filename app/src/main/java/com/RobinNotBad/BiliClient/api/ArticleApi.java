@@ -4,11 +4,15 @@ import com.RobinNotBad.BiliClient.model.ArticleInfo;
 import com.RobinNotBad.BiliClient.model.Stats;
 import com.RobinNotBad.BiliClient.model.UserInfo;
 import com.RobinNotBad.BiliClient.util.NetWorkUtil;
+import com.RobinNotBad.BiliClient.util.SharedPreferencesUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Objects;
+
+import okhttp3.Response;
 
 /*
 专栏API
@@ -53,5 +57,56 @@ public class ArticleApi {
         articleInfo.content = data.getString("content");
         articleInfo.keywords = data.getString("keywords");
         return articleInfo;
+    }
+
+    /**
+     * 专栏点赞
+     * @param cvid cvid
+     * @param type 1=点赞，2=取消赞
+     * @return resultCode
+     */
+    public static int like(long cvid, boolean type) throws IOException {
+        String url = "https://api.bilibili.com/x/article/like";
+        Response resp = Objects.requireNonNull(NetWorkUtil.post(url, new NetWorkUtil.FormData()
+                .put("id", cvid)
+                .put("type", type ? 1 : 2)
+                .put("csrf", SharedPreferencesUtil.getString("csrf",""))
+                .toString(), NetWorkUtil.webHeaders));
+        try {
+            JSONObject respBody = new JSONObject(resp.body().string());
+            return respBody.getInt("code");
+        } catch (JSONException ignored) {
+            return -1;
+        }
+    }
+
+    public static int addCoin(long cvid, long upid, int multiply) throws IOException {
+        String url = "https://api.bilibili.com/x/article/like";
+        Response resp = Objects.requireNonNull(NetWorkUtil.post(url, new NetWorkUtil.FormData()
+                .put("aid", cvid)
+                .put("upid", upid)
+                .put("multiply", multiply)
+                .put("csrf", SharedPreferencesUtil.getString("csrf",""))
+                .toString(), NetWorkUtil.webHeaders));
+        try {
+            JSONObject respBody = new JSONObject(resp.body().string());
+            return respBody.getInt("code");
+        } catch (JSONException ignored) {
+            return -1;
+        }
+    }
+
+    public static int favorite(long cvid) throws IOException {
+        String url = "https://api.bilibili.com/x/article/favorites/add";
+        Response resp = Objects.requireNonNull(NetWorkUtil.post(url, new NetWorkUtil.FormData()
+                .put("id", cvid)
+                .put("csrf", SharedPreferencesUtil.getString("csrf",""))
+                .toString(), NetWorkUtil.webHeaders));
+        try {
+            JSONObject respBody = new JSONObject(resp.body().string());
+            return respBody.getInt("code");
+        } catch (JSONException ignored) {
+            return -1;
+        }
     }
 }
