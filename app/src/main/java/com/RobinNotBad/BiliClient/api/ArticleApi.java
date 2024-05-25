@@ -51,6 +51,7 @@ public class ArticleApi {
         stats.share = jsonStats.getInt("share");
         stats.coin = jsonStats.getInt("coin");
         stats.liked = data.getBoolean("is_like");
+
         articleInfo.stats = stats;
 
         articleInfo.wordCount = data.getInt("words");
@@ -60,9 +61,46 @@ public class ArticleApi {
     }
 
     /**
+     * 另一个获取专栏相关信息api
+     * @param id cvid
+     * @return
+     */
+    public static ArticleInfo getArticleViewInfo(long id) throws JSONException, IOException {
+        String url = "https://api.bilibili.com/x/article/viewinfo?";
+        String args = "id=" + id + "&gaia_source=main_web&web_location=333.976&mobi_app=pc&from=web";
+        JSONObject result = NetWorkUtil.getJson(url + ConfInfoApi.signWBI(args));
+        if (!result.has("data")) return null;
+        JSONObject data = result.getJSONObject("data");
+
+        ArticleInfo articleInfo = new ArticleInfo();
+        articleInfo.id = id;
+        articleInfo.title = data.getString("title");
+        articleInfo.banner = data.getString("banner_url");
+
+        UserInfo upInfo = new UserInfo();
+        upInfo.mid = data.getLong("mid");
+        upInfo.name = data.getString("author_name");
+        articleInfo.upInfo = upInfo;
+
+        JSONObject jsonStats = data.getJSONObject("stats");
+        Stats stats = new Stats();
+        stats.view = jsonStats.getInt("view");
+        stats.favorite = jsonStats.getInt("favorite");
+        stats.like = jsonStats.getInt("like");
+        stats.reply = jsonStats.getInt("reply");
+        stats.share = jsonStats.getInt("share");
+        stats.coin = jsonStats.getInt("coin");
+        stats.liked = data.getInt("like") == 1;
+        stats.favoured = data.getBoolean("favorite");
+        stats.coined = data.getInt("coin");
+        articleInfo.stats = stats;
+        return articleInfo;
+    }
+
+    /**
      * 专栏点赞
      * @param cvid cvid
-     * @param type 1=点赞，2=取消赞
+     * @param type true=点赞，false=取消赞
      * @return resultCode
      */
     public static int like(long cvid, boolean type) throws IOException {
@@ -80,11 +118,19 @@ public class ArticleApi {
         }
     }
 
+    /**
+     * 专栏投币
+     * @param cvid CVID
+     * @param upid UP主ID
+     * @param multiply 投币数量
+     * @return 返回码
+     */
     public static int addCoin(long cvid, long upid, int multiply) throws IOException {
-        String url = "https://api.bilibili.com/x/article/like";
+        String url = "https://api.bilibili.com/x/web-interface/coin/add";
         Response resp = Objects.requireNonNull(NetWorkUtil.post(url, new NetWorkUtil.FormData()
                 .put("aid", cvid)
                 .put("upid", upid)
+                .put("avtype", 2)
                 .put("multiply", multiply)
                 .put("csrf", SharedPreferencesUtil.getString("csrf",""))
                 .toString(), NetWorkUtil.webHeaders));
@@ -96,6 +142,11 @@ public class ArticleApi {
         }
     }
 
+    /**
+     * 收藏专栏
+     * @param cvid CVID
+     * @return 返回码
+     */
     public static int favorite(long cvid) throws IOException {
         String url = "https://api.bilibili.com/x/article/favorites/add";
         Response resp = Objects.requireNonNull(NetWorkUtil.post(url, new NetWorkUtil.FormData()
