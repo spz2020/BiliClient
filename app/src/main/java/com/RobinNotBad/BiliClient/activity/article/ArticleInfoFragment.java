@@ -171,7 +171,10 @@ public class ArticleInfoFragment extends Fragment {
                             articleInfo.stats.favorite++;
                         }
                         articleInfo.stats.favoured = !articleInfo.stats.favoured;
-                        requireActivity().runOnUiThread(() -> favLabel.setText(ToolsUtil.toWan(articleInfo.stats.favorite)));
+                        requireActivity().runOnUiThread(() -> {
+                            favLabel.setText(ToolsUtil.toWan(articleInfo.stats.favorite));
+                            MsgUtil.toast("操作成功~", requireContext());
+                        });
                     } catch (IOException e) {
                         if (isAdded()) requireActivity().runOnUiThread(() -> MsgUtil.err(e, requireContext()));
                     }
