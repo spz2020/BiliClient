@@ -164,14 +164,14 @@ public class ArticleInfoFragment extends Fragment {
                         if (articleInfo.stats.favoured) {
                             ArticleApi.delFavorite(articleInfo.id);
                             requireActivity().runOnUiThread(() -> fav.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.icon_favourite_0)));
-                            articleInfo.stats.coin--;
+                            articleInfo.stats.favorite--;
                         } else {
                             ArticleApi.favorite(articleInfo.id);
                             requireActivity().runOnUiThread(() -> fav.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.icon_favourite_1)));
-                            articleInfo.stats.coin++;
+                            articleInfo.stats.favorite++;
                         }
                         articleInfo.stats.favoured = !articleInfo.stats.favoured;
-                        requireActivity().runOnUiThread(() -> coinLabel.setText(ToolsUtil.toWan(articleInfo.stats.coin)));
+                        requireActivity().runOnUiThread(() -> coinLabel.setText(ToolsUtil.toWan(articleInfo.stats.favorite)));
                     } catch (IOException e) {
                         if (isAdded()) requireActivity().runOnUiThread(() -> MsgUtil.err(e, requireContext()));
                     }
