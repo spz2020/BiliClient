@@ -17,10 +17,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.RobinNotBad.BiliClient.R;
 import com.RobinNotBad.BiliClient.adapter.ArticleContentAdapter;
 import com.RobinNotBad.BiliClient.api.ArticleApi;
-import com.RobinNotBad.BiliClient.api.LikeCoinFavApi;
 import com.RobinNotBad.BiliClient.model.ArticleInfo;
 import com.RobinNotBad.BiliClient.model.ArticleLine;
-import com.RobinNotBad.BiliClient.model.VideoInfo;
 import com.RobinNotBad.BiliClient.util.CenterThreadPool;
 import com.RobinNotBad.BiliClient.util.JsonUtil;
 import com.RobinNotBad.BiliClient.util.MsgUtil;
@@ -161,11 +159,11 @@ public class ArticleInfoFragment extends Fragment {
                     }
                 }));
 
-                fav.setOnClickListener(view1 -> requireActivity().runOnUiThread(() -> {
+                fav.setOnClickListener(view1 -> CenterThreadPool.run(() -> {
                     try {
                         ArticleApi.favorite(articleInfo.id);
                     } catch (IOException e) {
-                        if (isAdded()) MsgUtil.err(e, requireContext());
+                        if (isAdded()) requireActivity().runOnUiThread(() -> MsgUtil.err(e, requireContext()));
                     }
                 }));
 
