@@ -134,7 +134,7 @@ public class ToolsUtil {
         for (TextView textView : textViews) {
             if (TextUtils.isEmpty(textView.getText())) continue;
             String text = textView.getText().toString();
-            SpannableString spannableString = (textView.getText() instanceof SpannableString ? (SpannableString) textView.getText() : new SpannableString(text));
+            SpannableString spannableString = new SpannableString(textView.getText());
 
             Pattern urlPattern = Patterns.WEB_URL;
             Matcher urlMatcher = urlPattern.matcher(text);
@@ -242,7 +242,7 @@ public class ToolsUtil {
                 e.printStackTrace();
             }
             try {
-                context.startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(text)));
+                context.startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse((text.startsWith("http://") || text.startsWith("https://") ? text : "http://" + text))));
             } catch (ActivityNotFoundException e) {
                 MsgUtil.toast("没有可处理此链接的应用！", context);
             } catch (Throwable th) {
