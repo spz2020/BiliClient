@@ -9,7 +9,6 @@ import android.text.SpannableString;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -123,11 +122,15 @@ public class ReplyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             String text = replyList.get(realPosition).message;
             replyHolder.message.setText(text);  //防止加载速度慢时露出鸡脚
             ToolsUtil.setCopy(replyHolder.message,context);
-            if(replyList.get(realPosition).emote != null) {
+            if(replyList.get(realPosition).emotes != null) {
                 CenterThreadPool.run(() -> {
                     try {
-                        SpannableString spannableString = EmoteUtil.textReplaceEmote(text, replyList.get(realPosition).emote, 1.0f, context);
-                        ((Activity) context).runOnUiThread(() -> replyHolder.message.setText(spannableString));
+                        SpannableString spannableString = EmoteUtil.textReplaceEmote(text, replyList.get(realPosition).emotes, 1.0f, context, replyHolder.message.getText());
+                        ((Activity) context).runOnUiThread(() -> {
+                            replyHolder.message.setText(spannableString);
+                            ToolsUtil.setLink(replyHolder.message);
+                            ToolsUtil.setAtLink(replyList.get(realPosition).atNameToMid, replyHolder.message);
+                        });
                     } catch (JSONException e) {
                         e.printStackTrace();
                     } catch (ExecutionException e) {
@@ -137,7 +140,10 @@ public class ReplyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     }
                 });
             }
+
+
             ToolsUtil.setLink(replyHolder.message);
+            ToolsUtil.setAtLink(replyList.get(realPosition).atNameToMid, replyHolder.message);
 
             replyHolder.likeCount.setText(String.valueOf(replyList.get(realPosition).likeCount));
 

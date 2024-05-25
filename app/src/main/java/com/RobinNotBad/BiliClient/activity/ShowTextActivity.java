@@ -52,11 +52,9 @@ public class ShowTextActivity extends BaseActivity {
         TextView textView = findViewById(R.id.textView);
         textView.setText(content);
         ToolsUtil.setCopy(textView,this);
-        ToolsUtil.setLink(textView);
 
         if(intent.getData() != null){
             textView.setText(intent.getData().toString());
         }
-        ToolsUtil.setLink(textView);
     }
 }

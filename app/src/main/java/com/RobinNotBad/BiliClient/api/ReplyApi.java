@@ -18,6 +18,9 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Objects;
 
 //腕上哔哩那边注释里写了一连串的麻烦麻烦麻烦，顿时预感不妙
@@ -82,13 +85,11 @@ public class ReplyApi {
             replyReturn.sender = userInfo;    //发送者
 
             JSONObject content = reply.getJSONObject("content");
-            String message = ToolsUtil.htmlToString(content.getString("message"));
-            replyReturn.message = message;
+            replyReturn.message = ToolsUtil.htmlToString(content.getString("message"));
             //Log.e("debug-评论内容", message);
 
-            int likeCount = reply.getInt("like");
             //Log.e("debug-点赞数", String.valueOf(likeCount));
-            replyReturn.likeCount = likeCount;
+            replyReturn.likeCount = reply.getInt("like");
             replyReturn.liked = reply.getInt("action") == 1;
 
             if(content.has("emote") && !content.isNull("emote")) {
@@ -96,6 +97,7 @@ public class ReplyApi {
                 JSONObject emoteJson = content.getJSONObject("emote");
                 //Log.e("debug-emote",emoteJson.toString());
                 ArrayList<String> emoteKeys = JsonUtil.getJsonKeys(emoteJson);
+
                 //LsonObject lsonEmote = LsonUtil.parseAsObject(emote.toString());    //最终还是用了Lson的一个功能，因为原生方式确实难以解决，还好这个功能是github版已有的
                 //String[] emoteKeys = lsonEmote.getKeys();                           //你看这多简单，唉，但是仅用这一处却引用整个库确实有些浪费，如果我有时间就自己写了。就当是致敬了罢（
                 //最终结果是自己写了函数，luern的库彻底扔掉了
@@ -108,7 +110,19 @@ public class ReplyApi {
                             key.getJSONObject("meta").getInt("size")
                     ));
                 }
-                replyReturn.emote = emoteList;
+                replyReturn.emotes = emoteList;
+            }
+
+            if (content.has("at_name_to_mid") && !content.isNull("at_name_to_mid")) {
+                Map<String, Long> atNameToMid = new HashMap<>();
+                JSONObject jsonObject = content.getJSONObject("at_name_to_mid");
+                Iterator<String> keys = jsonObject.keys();
+                for (Iterator<String> it = keys; it.hasNext(); ) {
+                    String key = it.next();
+                    long val = jsonObject.getLong(key);
+                    atNameToMid.put(key, val);
+                }
+                replyReturn.atNameToMid = atNameToMid;
             }
 
             //表情包列表 不知道咋办就直接传json了  显示部分见EmoteUtil

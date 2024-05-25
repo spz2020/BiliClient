@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.text.SpannableString;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,7 +28,6 @@ import com.RobinNotBad.BiliClient.activity.dynamic.send.SendDynamicActivity;
 import com.RobinNotBad.BiliClient.activity.user.info.UserInfoActivity;
 import com.RobinNotBad.BiliClient.activity.video.info.VideoInfoActivity;
 import com.RobinNotBad.BiliClient.api.DynamicApi;
-import com.RobinNotBad.BiliClient.api.ReplyApi;
 import com.RobinNotBad.BiliClient.model.ArticleCard;
 import com.RobinNotBad.BiliClient.model.Dynamic;
 import com.RobinNotBad.BiliClient.model.VideoCard;
@@ -44,7 +44,6 @@ import com.google.android.material.card.MaterialCardView;
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
@@ -96,10 +95,11 @@ public class DynamicHolder extends RecyclerView.ViewHolder{
             if (dynamic.emotes != null) {
                 CenterThreadPool.run(() -> {
                     try {
-                        SpannableString spannableString = EmoteUtil.textReplaceEmote(dynamic.content, dynamic.emotes, 1.0f, context);
+                        SpannableString spannableString = EmoteUtil.textReplaceEmote(dynamic.content, dynamic.emotes, 1.0f, context, content.getText());
                         CenterThreadPool.runOnUiThread(() -> {
                             content.setText(spannableString);
                             ToolsUtil.setLink(content);
+                            ToolsUtil.setAtLink(dynamic.ats, content);
                         });
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -110,6 +110,8 @@ public class DynamicHolder extends RecyclerView.ViewHolder{
                     }
                 });
             }
+            ToolsUtil.setLink(content);
+            ToolsUtil.setAtLink(dynamic.ats, content);
         } else content.setVisibility(View.GONE);
         Glide.with(context).load(GlideUtil.url(dynamic.userInfo.avatar))
                 .placeholder(R.mipmap.akari)
@@ -171,7 +173,7 @@ public class DynamicHolder extends RecyclerView.ViewHolder{
                 break;
         }
 
-        if(clickable) {
+        if (clickable) {
             content.setMaxLines(5);
             if(dynamic.dynamicId != 0) {
                 (isChild ? itemView.findViewById(R.id.cardView) : itemView).setOnClickListener(view -> {
@@ -182,10 +184,10 @@ public class DynamicHolder extends RecyclerView.ViewHolder{
                 });
                 content.setOnClickListener(view -> (isChild ? itemView.findViewById(R.id.cardView) : itemView).callOnClick());
             }
-        }
-        else {
+        } else {
             content.setMaxLines(999);
         }
+        content.setEllipsize(TextUtils.TruncateAt.END);
 
         View.OnClickListener onRelayClick = new View.OnClickListener() {
             @Override

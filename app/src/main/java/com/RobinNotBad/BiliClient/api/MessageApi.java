@@ -69,7 +69,7 @@ public class MessageApi {
                     replyInfo.rpid = object.getJSONObject("item").getLong("item_id");
                     replyInfo.sender = null;
                     replyInfo.message = object.getJSONObject("item").getString("title");
-                    replyInfo.emote = new ArrayList<>();
+                    replyInfo.emotes = new ArrayList<>();
                     replyInfo.pictureList = new ArrayList<>();
                     replyInfo.likeCount = 0;
                     replyInfo.upLiked = false;
@@ -85,7 +85,7 @@ public class MessageApi {
                     replyInfo.rpid = object.getJSONObject("item").getLong("item_id");
                     replyInfo.sender = null;
                     replyInfo.message = object.getJSONObject("item").getString("title");
-                    replyInfo.emote = new ArrayList<>();
+                    replyInfo.emotes = new ArrayList<>();
                     replyInfo.pictureList = new ArrayList<>();
                     replyInfo.likeCount = 0;
                     replyInfo.upLiked = false;
@@ -135,7 +135,7 @@ public class MessageApi {
                     replyChildInfo.rpid = object.getJSONObject("item").getLong("target_id");
                     replyChildInfo.sender = null;
                     replyChildInfo.message = object.getJSONObject("item").getString("title");
-                    replyChildInfo.emote = new ArrayList<>();
+                    replyChildInfo.emotes = new ArrayList<>();
                     replyChildInfo.pictureList = new ArrayList<>();
                     replyChildInfo.likeCount = 0;
                     replyChildInfo.upLiked = false;
@@ -150,7 +150,7 @@ public class MessageApi {
                     replyChildInfo.rpid = object.getJSONObject("item").getLong("target_id");
                     replyChildInfo.sender = null;
                     replyChildInfo.message = object.getJSONObject("item").getString("title");
-                    replyChildInfo.emote = new ArrayList<>();
+                    replyChildInfo.emotes = new ArrayList<>();
                     replyChildInfo.pictureList = new ArrayList<>();
                     replyChildInfo.likeCount = 0;
                     replyChildInfo.upLiked = false;
@@ -200,7 +200,7 @@ public class MessageApi {
                     replyChildInfo.rpid = object.getJSONObject("item").getLong("target_id");
                     replyChildInfo.sender = null;
                     replyChildInfo.message = object.getJSONObject("item").getString("title");
-                    replyChildInfo.emote = new ArrayList<>();
+                    replyChildInfo.emotes = new ArrayList<>();
                     replyChildInfo.pictureList = new ArrayList<>();
                     replyChildInfo.likeCount = 0;
                     replyChildInfo.upLiked = false;
@@ -215,7 +215,7 @@ public class MessageApi {
                     replyChildInfo.rpid = object.getJSONObject("item").getLong("target_id");
                     replyChildInfo.sender = null;
                     replyChildInfo.message = object.getJSONObject("item").getString("title");
-                    replyChildInfo.emote = new ArrayList<>();
+                    replyChildInfo.emotes = new ArrayList<>();
                     replyChildInfo.pictureList = new ArrayList<>();
                     replyChildInfo.likeCount = 0;
                     replyChildInfo.upLiked = false;

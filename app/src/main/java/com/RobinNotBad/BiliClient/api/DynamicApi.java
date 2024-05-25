@@ -2,10 +2,12 @@ package com.RobinNotBad.BiliClient.api;
 
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Pair;
 
 import androidx.annotation.NonNull;
 
 import com.RobinNotBad.BiliClient.model.ArticleCard;
+import com.RobinNotBad.BiliClient.model.At;
 import com.RobinNotBad.BiliClient.model.Dynamic;
 import com.RobinNotBad.BiliClient.model.Emote;
 import com.RobinNotBad.BiliClient.model.Stats;
@@ -91,6 +93,16 @@ public class DynamicApi {
             Log.e("debug", "publishComplex", e);
             return -1;
         }
+        return -1;
+    }
+
+    /**
+     * TODO 发布可包含艾特信息的文本动态
+     * @param content 文本内容
+     * @param atUserUid 文本内at到的人的用户名uid map
+     * @return 发送成功返回的动态id，失败返回-1
+     */
+    public static long publishTextContent(String content, Map<String, Long> atUserUid) {
         return -1;
     }
 
@@ -228,6 +240,7 @@ public class DynamicApi {
             if(module_dynamic.has("desc") && !module_dynamic.isNull("desc")) {
                 StringBuilder dynamic_content = new StringBuilder();
                 ArrayList<Emote> dynamic_emotes = new ArrayList<>();
+                ArrayList<At> ats = new ArrayList<>();
 
                 JSONObject desc = module_dynamic.getJSONObject("desc");
                 JSONArray rich_text_nodes = desc.getJSONArray("rich_text_nodes");
@@ -235,14 +248,16 @@ public class DynamicApi {
                     JSONObject rich_text_node = rich_text_nodes.getJSONObject(i);
                     String type = rich_text_node.getString("type");
                     switch (type){
-                        case "RICH_TEXT_NODE_TYPE_TEXT":
-                            dynamic_content.append(rich_text_node.getString("text"));
-                            break;
                         case "RICH_TEXT_NODE_TYPE_EMOJI":
                             dynamic_content.append(rich_text_node.getString("text"));
                             JSONObject emoji = rich_text_node.getJSONObject("emoji");
                             dynamic_emotes.add(new Emote(emoji.getString("text"), emoji.getString("icon_url"), emoji.getInt("size")));
                             break;
+                        case "RICH_TEXT_NODE_TYPE_AT":
+                            Pair<Integer, Integer> indexs = appendString(dynamic_content, rich_text_node.getString("text"));
+                            ats.add(new At(rich_text_node.getLong("rid"), indexs.first, indexs.second));
+                            break;
+                        case "RICH_TEXT_NODE_TYPE_TEXT":
                         default:
                             dynamic_content.append(rich_text_node.getString("text"));
                             break;
@@ -251,6 +266,7 @@ public class DynamicApi {
                 dynamic.content = dynamic_content.toString();
                 Log.e("debug-dynamic-content",dynamic.content);
                 dynamic.emotes = dynamic_emotes;
+                dynamic.ats = ats;
             }
             else dynamic.content = "";
 
@@ -329,6 +345,13 @@ public class DynamicApi {
         }
 
         return dynamic;
+    }
+
+    private static Pair<Integer, Integer> appendString(StringBuilder stringBuilder, String str) {
+        int startIndex = stringBuilder.length();
+        stringBuilder.append(str);
+        int endIndex = stringBuilder.length();
+        return new Pair<>(startIndex, endIndex);
     }
 
     private static VideoCard analyzeVideoCard(JSONObject jsonObject) throws JSONException {

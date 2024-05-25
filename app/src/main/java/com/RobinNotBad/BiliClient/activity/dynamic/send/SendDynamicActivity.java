@@ -106,8 +106,12 @@ public class SendDynamicActivity extends BaseActivity {
             if (dynamic.emotes != null) {
                 CenterThreadPool.run(() -> {
                     try {
-                        SpannableString spannableString = EmoteUtil.textReplaceEmote(dynamic.content, dynamic.emotes, 1.0f, this);
-                        CenterThreadPool.runOnUiThread(() -> content.setText(spannableString));
+                        SpannableString spannableString = EmoteUtil.textReplaceEmote(dynamic.content, dynamic.emotes, 1.0f, this, content.getText());
+                        CenterThreadPool.runOnUiThread(() -> {
+                            content.setText(spannableString);
+                            ToolsUtil.setLink(content);
+                            ToolsUtil.setAtLink(dynamic.ats, content);
+                        });
                     } catch (JSONException e) {
                         e.printStackTrace();
                     } catch (ExecutionException e) {
@@ -118,6 +122,8 @@ public class SendDynamicActivity extends BaseActivity {
                 });
             }
         } else content.setVisibility(View.GONE);
+        ToolsUtil.setLink(content);
+        ToolsUtil.setAtLink(dynamic.ats, content);
         Glide.with(this).load(GlideUtil.url(dynamic.userInfo.avatar))
                 .placeholder(R.mipmap.akari)
                 .apply(RequestOptions.circleCropTransform())

@@ -1,6 +1,8 @@
 package com.RobinNotBad.BiliClient.model;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class Reply {
     public long rpid;
@@ -8,7 +10,8 @@ public class Reply {
     public String pubTime;
     public UserInfo sender;
     public String message;
-    public ArrayList<Emote> emote;
+    public ArrayList<Emote> emotes;
+    public Map<String, Long> atNameToMid;
     public ArrayList<String> pictureList;
     public int likeCount;
     public boolean upLiked;
