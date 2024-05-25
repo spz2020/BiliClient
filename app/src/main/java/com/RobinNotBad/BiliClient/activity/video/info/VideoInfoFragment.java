@@ -269,10 +269,11 @@ public class VideoInfoFragment extends Fragment {
             else description.setMaxLines(512);
             desc_expand = !desc_expand;
         });
+        ToolsUtil.setLink(description);
+        ToolsUtil.setAtLink(videoInfo.descAts, description);
 
         ToolsUtil.setCopy(description, requireContext());
         ToolsUtil.setCopy(bvidText, requireContext());
-        ToolsUtil.setLink(description);
 
         play.setOnClickListener(view1 -> play());
         play.setOnLongClickListener(view1 -> {

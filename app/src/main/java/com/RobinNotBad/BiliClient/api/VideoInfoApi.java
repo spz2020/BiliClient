@@ -2,11 +2,14 @@ package com.RobinNotBad.BiliClient.api;
 
 import android.annotation.SuppressLint;
 import android.util.Log;
+import android.util.Pair;
 
+import com.RobinNotBad.BiliClient.model.At;
 import com.RobinNotBad.BiliClient.model.Stats;
 import com.RobinNotBad.BiliClient.model.UserInfo;
 import com.RobinNotBad.BiliClient.model.VideoInfo;
 import com.RobinNotBad.BiliClient.util.NetWorkUtil;
+import com.RobinNotBad.BiliClient.util.StringUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -62,7 +65,28 @@ public class VideoInfoApi {
         Log.e("标题",videoInfo.title);
         videoInfo.cover = data.getString("pic");
         Log.e("封面",videoInfo.cover);
-        videoInfo.description = data.getString("desc");
+        if (data.has("desc_v2") && !data.isNull("desc_v2")) {
+            StringBuilder sb = new StringBuilder();
+            JSONArray descArray = data.getJSONArray("desc_v2");
+            ArrayList<At> ats = new ArrayList<>();
+            for (int i = 0; i < descArray.length(); i++) {
+                JSONObject curObj = descArray.getJSONObject(i);
+                int type = curObj.getInt("type");
+                switch (type) {
+                    case 2:
+                        Pair<Integer, Integer> indexs = StringUtil.appendString(sb, "@" + curObj.getString("raw_text"));
+                        ats.add(new At(curObj.getLong("biz_id"), indexs.first, indexs.second));
+                        break;
+                    default:
+                        sb.append(curObj.getString("raw_text"));
+                        break;
+                }
+            }
+            videoInfo.description = sb.toString();
+            videoInfo.descAts = ats;
+        } else {
+            videoInfo.description = data.getString("desc");
+        }
         Log.e("简介",videoInfo.description);
 
         videoInfo.bvid = data.getString("bvid");
@@ -106,9 +130,9 @@ public class VideoInfoApi {
         videoInfo.upowerExclusive = data.getBoolean("is_upower_exclusive");
 
         JSONObject rights = data.getJSONObject("rights");
-        videoInfo.isCooperation = (rights.getInt("is_cooperation") == 1 ? true : false);
-        videoInfo.isSteinGate = (rights.getInt("is_stein_gate") == 1 ? true : false);
-        videoInfo.is360 = (rights.getInt("is_360") == 1 ? true : false);
+        videoInfo.isCooperation = (rights.getInt("is_cooperation") == 1);
+        videoInfo.isSteinGate = (rights.getInt("is_stein_gate") == 1);
+        videoInfo.is360 = (rights.getInt("is_360") == 1);
 
         ArrayList<UserInfo> staff_list = new ArrayList<>();
         if(videoInfo.isCooperation) { //如果是联合投稿就存储联合UP列表

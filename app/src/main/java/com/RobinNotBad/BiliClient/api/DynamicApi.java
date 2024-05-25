@@ -15,6 +15,7 @@ import com.RobinNotBad.BiliClient.model.UserInfo;
 import com.RobinNotBad.BiliClient.model.VideoCard;
 import com.RobinNotBad.BiliClient.util.NetWorkUtil;
 import com.RobinNotBad.BiliClient.util.SharedPreferencesUtil;
+import com.RobinNotBad.BiliClient.util.StringUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -254,7 +255,7 @@ public class DynamicApi {
                             dynamic_emotes.add(new Emote(emoji.getString("text"), emoji.getString("icon_url"), emoji.getInt("size")));
                             break;
                         case "RICH_TEXT_NODE_TYPE_AT":
-                            Pair<Integer, Integer> indexs = appendString(dynamic_content, rich_text_node.getString("text"));
+                            Pair<Integer, Integer> indexs = StringUtil.appendString(dynamic_content, rich_text_node.getString("text"));
                             ats.add(new At(rich_text_node.getLong("rid"), indexs.first, indexs.second));
                             break;
                         case "RICH_TEXT_NODE_TYPE_TEXT":
@@ -345,13 +346,6 @@ public class DynamicApi {
         }
 
         return dynamic;
-    }
-
-    private static Pair<Integer, Integer> appendString(StringBuilder stringBuilder, String str) {
-        int startIndex = stringBuilder.length();
-        stringBuilder.append(str);
-        int endIndex = stringBuilder.length();
-        return new Pair<>(startIndex, endIndex);
     }
 
     private static VideoCard analyzeVideoCard(JSONObject jsonObject) throws JSONException {
