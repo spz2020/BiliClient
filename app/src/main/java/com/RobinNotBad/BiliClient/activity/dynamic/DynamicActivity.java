@@ -18,6 +18,10 @@ import com.RobinNotBad.BiliClient.util.MsgUtil;
 import com.RobinNotBad.BiliClient.util.SharedPreferencesUtil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 //动态页面
 //2023-09-17
@@ -36,7 +40,22 @@ public class DynamicActivity extends RefreshMainActivity {
             String text = data.getStringExtra("text");
             CenterThreadPool.run(() -> {
                 try {
-                    long dynId = DynamicApi.publishTextContent(text);
+                    long dynId;
+                    Map<String, Long> atUids = new HashMap<>();
+                    Pattern pattern = Pattern.compile("@(\\S+)\\s");
+                    Matcher matcher = pattern.matcher(text);
+                    while (matcher.find()) {
+                        String matchedString = matcher.group(1);
+                        long uid;
+                        if ((uid = DynamicApi.mentionAtFindUser(matchedString)) != -1) {
+                            atUids.put(matchedString, uid);
+                        }
+                    }
+                    if (atUids.isEmpty()) {
+                        dynId = DynamicApi.publishTextContent(text);
+                    } else {
+                        dynId = DynamicApi.publishTextContent(text, atUids);
+                    }
                     if (!(dynId == -1)) {
                         runOnUiThread(() -> MsgUtil.toast("发送成功~", DynamicActivity.this));
                     } else {

@@ -18,7 +18,7 @@ public class EmoteApi {
     public List<EmotePackage> getEmotes(String business) throws JSONException, IOException {
         List<EmotePackage> result = new ArrayList<>();
         String url = "https://api.bilibili.com/x/emote/user/panel/web?business=" + business;
-        JSONObject emotePackages = NetWorkUtil.getJson(url);
+        JSONObject emotePackages = NetWorkUtil.getJson(url, NetWorkUtil.webHeaders);
         if (emotePackages.getInt("code") != 0) throw new JSONException(emotePackages.getString("message"));
 
         JSONObject data = emotePackages.getJSONObject("data");
