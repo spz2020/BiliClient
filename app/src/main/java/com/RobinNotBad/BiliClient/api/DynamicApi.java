@@ -120,55 +120,6 @@ public class DynamicApi {
     }
 
     /**
-     * 解析包含艾特信息的文本动态内容
-     * @param content 文本内容
-     * @param atUserUid 文本内at到的人的用户名uid map
-     * @return Content JSON数组
-     */
-    public static JSONArray parseAtContent(String content, Map<String, Long> atUserUid) throws JSONException {
-        JSONArray contentJSONArray = new JSONArray();
-
-        Set<Pair<Integer, Integer>> indexes = new HashSet<>();
-        Map<Pair<Integer, Integer>, Long> uidIndexes = new HashMap<>();
-        for (Map.Entry<String, Long> entry : atUserUid.entrySet()) {
-            String key = entry.getKey();
-            long val = entry.getValue();
-
-            Pattern pattern = Pattern.compile("@" + key + " ");
-            Matcher matcher = pattern.matcher(content);
-            List<Pair<Integer, Integer>> mIndex = new ArrayList<>();
-            while (matcher.find()) {
-                int start = matcher.start();
-                // 不包含空格，我直接按照我抓的请求内容弄的
-                int end = matcher.end() - 1;
-                Pair<Integer, Integer> pair = new Pair<>(start, end);
-                mIndex.add(pair);
-                uidIndexes.put(pair, val);
-            }
-            indexes.addAll(mIndex);
-        }
-
-        ArrayList<Pair<Integer, Integer>> indexesList = new ArrayList<>(indexes);
-        Collections.sort(indexesList, (p1, p2) -> p1.first - p2.first);
-        int pos = 0;
-        for (Pair<Integer, Integer> index : indexesList) {
-            int start = index.first;
-            int end = index.second;
-            String sub = content.substring(pos, start);
-            if (!sub.isEmpty()) contentJSONArray.put(Content.create(sub, 1, null));
-            String subAt = content.substring(start, end);
-            if (!subAt.isEmpty())
-                contentJSONArray.put(Content.create(subAt, 2, String.valueOf(uidIndexes.get(index))));
-            pos = end;
-        }
-        String sub = content.substring(pos != 0 ? (pos + 1) : pos);
-        if (!sub.isEmpty()) contentJSONArray.put(Content.create(sub, 1, null));
-
-        if (indexesList.isEmpty()) contentJSONArray.put(Content.create(content, 1, null));
-        return contentJSONArray;
-    }
-
-    /**
      * 转发视频到动态，瞎扒的api
      * @param text 附加文字
      * @param aid aid
@@ -207,6 +158,68 @@ public class DynamicApi {
     }
 
     /**
+     * 转发动态（复杂动态api），还是自己瞎扒的api
+     * @param text 文字内容
+     * @param atUserUid 文本内at到的人的用户名uid map
+     * @param dyid 动态id
+     * @return 发送成功返回的动态id，失败返回-1
+     */
+    public static long relayDynamic(String text, Map<String, Long> atUserUid, long dyid) throws JSONException, IOException {
+        return publishComplex(text == null ? new JSONArray().put(Content.create("", 1, null)) : atUserUid != null ? parseAtContent(text, atUserUid) : new JSONArray().put(Content.create(text, 1, null)),
+                null, null, null,
+                4, Map.of("web_repost_src", new JSONObject().put("dyn_id_str", String.valueOf(dyid))));
+    }
+
+    /**
+     * 解析包含艾特信息的文本动态内容
+     * @param content 文本内容
+     * @param atUserUid 文本内at到的人的用户名uid map
+     * @return Content JSON数组
+     */
+    public static JSONArray parseAtContent(String content, Map<String, Long> atUserUid) throws JSONException {
+        JSONArray contentJSONArray = new JSONArray();
+
+        Set<Pair<Integer, Integer>> indexes = new HashSet<>();
+        Map<Pair<Integer, Integer>, Long> uidIndexes = new HashMap<>();
+        for (Map.Entry<String, Long> entry : atUserUid.entrySet()) {
+            String key = entry.getKey();
+            long val = entry.getValue();
+
+            Pattern pattern = Pattern.compile("@" + key + " ");
+            Matcher matcher = pattern.matcher(content);
+            List<Pair<Integer, Integer>> mIndex = new ArrayList<>();
+            while (matcher.find()) {
+                int start = matcher.start();
+                // 不包含空格，我直接按照我抓的请求内容弄的
+                int end = matcher.end();
+                Pair<Integer, Integer> pair = new Pair<>(start, end);
+                mIndex.add(pair);
+                uidIndexes.put(pair, val);
+            }
+            indexes.addAll(mIndex);
+        }
+
+        ArrayList<Pair<Integer, Integer>> indexesList = new ArrayList<>(indexes);
+        Collections.sort(indexesList, (p1, p2) -> p1.first - p2.first);
+        int pos = 0;
+        for (Pair<Integer, Integer> index : indexesList) {
+            int start = index.first;
+            int end = index.second;
+            String sub = content.substring(pos, start);
+            if (!sub.isEmpty()) contentJSONArray.put(Content.create(sub, 1, null));
+            String subAt = content.substring(start, end);
+            if (!subAt.isEmpty())
+                contentJSONArray.put(Content.create(subAt, 2, String.valueOf(uidIndexes.get(index))));
+            pos = end;
+        }
+        String sub = content.substring(pos);
+        if (!sub.isEmpty()) contentJSONArray.put(Content.create(sub, 1, null));
+
+        if (indexesList.isEmpty()) contentJSONArray.put(Content.create(content, 1, null));
+        return contentJSONArray;
+    }
+
+    /**
      * 动态点赞/取消赞
      * @param dyid 动态id
      * @param up 是否为点赞
@@ -228,7 +241,7 @@ public class DynamicApi {
     }
 
     /**
-     * 寻找用户（完全匹配）
+     * 寻找用户（完全匹配），仍然自己瞎扒的，不清楚是否有更好方案
      * @param name 名称
      * @return 用户UID，未找到返回-1
      */

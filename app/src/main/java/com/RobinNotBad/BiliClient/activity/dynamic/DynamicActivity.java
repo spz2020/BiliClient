@@ -3,6 +3,7 @@ package com.RobinNotBad.BiliClient.activity.dynamic;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -75,10 +76,23 @@ public class DynamicActivity extends RefreshMainActivity {
             Intent data = result.getData();
             if (code == RESULT_OK && data != null) {
                 String text = data.getStringExtra("text");
+                if (TextUtils.isEmpty(text)) text = "转发动态";
                 long dynamicId = data.getLongExtra("dynamicId", -1);
+                String finalText = text;
                 CenterThreadPool.run(() -> {
                     try {
-                        long dynId = DynamicApi.relayDynamic(text, dynamicId);
+                        long dynId;
+                        Map<String, Long> atUids = new HashMap<>();
+                        Pattern pattern = Pattern.compile("@(\\S+)\\s");
+                        Matcher matcher = pattern.matcher(finalText);
+                        while (matcher.find()) {
+                            String matchedString = matcher.group(1);
+                            long uid;
+                            if ((uid = DynamicApi.mentionAtFindUser(matchedString)) != -1) {
+                                atUids.put(matchedString, uid);
+                            }
+                        }
+                        dynId = DynamicApi.relayDynamic(finalText, (atUids.isEmpty() ? null : atUids), dynamicId);
                         if (!(dynId == -1)) {
                             activity.runOnUiThread(() -> MsgUtil.toast("转发成功~", activity));
                         } else {
