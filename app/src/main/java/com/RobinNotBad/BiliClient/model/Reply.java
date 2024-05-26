@@ -8,6 +8,7 @@ import java.util.Map;
 
 public class Reply {
     public long rpid;
+    public long oid;
     public String ofBvid = "";
     public String pubTime;
     public UserInfo sender;

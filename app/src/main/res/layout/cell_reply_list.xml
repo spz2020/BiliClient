@@ -78,6 +78,30 @@
         app:layout_constraintTop_toTopOf="@+id/likes"
         app:layout_constraintVertical_bias="0.5" />
 
+    <ImageView
+        android:id="@+id/item_reply_delete_img"
+        android:layout_width="18dp"
+        android:layout_margin="3dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:adjustViewBounds="true"
+        android:src="@drawable/icon_delete"
+        app:layout_constraintStart_toEndOf="@id/dislikeBtn"
+        app:layout_constraintTop_toBottomOf="@id/imageCard" />
+
+    <TextView
+        android:id="@+id/item_reply_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:alpha="0.7"
+        android:gravity="center_vertical"
+        android:textColor="#a2a2a2"
+        android:text="删除"
+        app:layout_constraintStart_toEndOf="@+id/item_reply_delete_img"
+        app:layout_constraintTop_toTopOf="@+id/item_reply_delete_img"
+        app:layout_constraintBottom_toBottomOf="@+id/item_reply_delete_img"
+        android:textSize="11sp" />
+
     <androidx.constraintlayout.utils.widget.ImageFilterView
         android:id="@+id/imageCard"
         android:layout_width="match_parent"

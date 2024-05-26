@@ -23,13 +23,18 @@ import com.RobinNotBad.BiliClient.activity.ImageViewerActivity;
 import com.RobinNotBad.BiliClient.activity.user.info.UserInfoActivity;
 import com.RobinNotBad.BiliClient.activity.video.info.ReplyInfoActivity;
 import com.RobinNotBad.BiliClient.activity.video.info.WriteReplyActivity;
+import com.RobinNotBad.BiliClient.api.ArticleApi;
+import com.RobinNotBad.BiliClient.api.DynamicApi;
 import com.RobinNotBad.BiliClient.api.ReplyApi;
+import com.RobinNotBad.BiliClient.api.VideoInfoApi;
 import com.RobinNotBad.BiliClient.listener.OnItemClickListener;
 import com.RobinNotBad.BiliClient.model.Reply;
+import com.RobinNotBad.BiliClient.model.UserInfo;
 import com.RobinNotBad.BiliClient.util.CenterThreadPool;
 import com.RobinNotBad.BiliClient.util.EmoteUtil;
 import com.RobinNotBad.BiliClient.util.GlideUtil;
 import com.RobinNotBad.BiliClient.util.MsgUtil;
+import com.RobinNotBad.BiliClient.util.SharedPreferencesUtil;
 import com.RobinNotBad.BiliClient.util.ToolsUtil;
 import com.RobinNotBad.BiliClient.view.CustomListView;
 import com.bumptech.glide.Glide;
@@ -41,6 +46,7 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 //评论Adapter
@@ -243,6 +249,92 @@ public class ReplyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 }
             }));
 
+            View.OnClickListener onDeleteClick = view -> {
+                MsgUtil.toast("长按删除", context);
+            };
+            replyHolder.item_reply_delete_img.setOnClickListener(onDeleteClick);
+            replyHolder.item_reply_delete.setOnClickListener(onDeleteClick);
+            View.OnLongClickListener onDeleteLongClick = new View.OnLongClickListener() {
+                private int longClickPosition = -1;
+                private long longClickTime = -1;
+                @Override
+                public boolean onLongClick(View view) {
+                    long currentTime = System.currentTimeMillis();
+                    if (longClickPosition == realPosition && currentTime - longClickTime < 10000) {
+                        CenterThreadPool.run(() -> {
+                            try {
+                                int result = ReplyApi.deleteReply(oid, replyList.get(realPosition).rpid, replyType);
+                                if (result == 0) {
+                                    replyList.remove(realPosition);
+                                    ((Activity) context).runOnUiThread(() -> {
+                                        notifyItemRemoved(position);
+                                        notifyItemRangeChanged(position, replyList.size() - realPosition);
+                                        longClickPosition = -1;
+                                        MsgUtil.toast("删除成功~", context);
+                                    });
+                                } else {
+                                    String msg = "操作失败：" + result;
+                                    switch (result) {
+                                        case -404:
+                                            msg = "没有这条评论！";
+                                            break;
+                                        case -403:
+                                            msg = "权限不足！";
+                                            break;
+                                    }
+                                    String finalMsg = msg;
+                                    ((Activity) context).runOnUiThread(() -> MsgUtil.toast(finalMsg, context));
+                                }
+                            } catch (Exception e) {
+                                ((Activity) context).runOnUiThread(() -> MsgUtil.err(e, context));
+                            }
+                        });
+                    } else {
+                        longClickPosition = realPosition;
+                        longClickTime = currentTime;
+                        MsgUtil.toast("再次长按删除", context);
+                    }
+                    return true;
+                }
+            };
+            replyHolder.item_reply_delete_img.setOnLongClickListener(onDeleteLongClick);
+            replyHolder.item_reply_delete.setOnLongClickListener(onDeleteLongClick);
+            if (!(replyList.get(realPosition).sender.mid == SharedPreferencesUtil.getLong(SharedPreferencesUtil.mid,0)) || replyList.get(realPosition).sender.mid == 0) {
+                replyHolder.item_reply_delete_img.setVisibility(View.GONE);
+                replyHolder.item_reply_delete.setVisibility(View.GONE);
+                CenterThreadPool.run(() -> {
+                    try {
+                        Reply reply = replyList.get(realPosition);
+                        boolean isManager = false;
+                        switch (replyType) {
+                            case ReplyApi.REPLY_TYPE_VIDEO:
+                                ArrayList<UserInfo> staffs = VideoInfoApi.getInfoByJson(Objects.requireNonNull(VideoInfoApi.getJsonByAid(reply.oid))).staff;
+                                for (UserInfo userInfo : staffs) {
+                                    if (userInfo.mid == SharedPreferencesUtil.getLong(SharedPreferencesUtil.mid,0)) {
+                                        isManager = true;
+                                        break;
+                                    }
+                                }
+                                break;
+                            case ReplyApi.REPLY_TYPE_DYNAMIC:
+                                isManager = DynamicApi.getDynamic(reply.oid).userInfo.mid == SharedPreferencesUtil.getLong(SharedPreferencesUtil.mid, 0);
+                                break;
+                            case ReplyApi.REPLY_TYPE_ARTICLE:
+                                isManager = Objects.requireNonNull(ArticleApi.getArticle(reply.oid)).upInfo.mid == SharedPreferencesUtil.getLong(SharedPreferencesUtil.mid, 0);
+                                break;
+                        }
+                        if (isManager) {
+                            ((Activity) context).runOnUiThread(() -> {
+                                replyHolder.item_reply_delete_img.setVisibility(View.VISIBLE);
+                                replyHolder.item_reply_delete.setVisibility(View.VISIBLE);
+                            });
+                        }
+                    } catch (Exception e) {
+                        ((Activity) context).runOnUiThread(() -> MsgUtil.err(e, context));
+                    }
+                });
+            }
+
             replyHolder.replyBtn.setOnClickListener(view -> {
                 Intent intent = new Intent();
                 intent.setClass(context, WriteReplyActivity.class);
@@ -276,9 +368,9 @@ public class ReplyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     public static class ReplyHolder extends RecyclerView.ViewHolder{
-        ImageView replyAvatar,dislikeBtn;
+        ImageView replyAvatar, dislikeBtn, item_reply_delete_img;
         CustomListView childReplies;
-        TextView message,userName,pubDate,childCount,likeCount,replyBtn,upLiked,imageCount;
+        TextView message,userName,pubDate,childCount,likeCount,replyBtn,upLiked,imageCount, item_reply_delete;
         LinearLayout childReplyCard;
         ImageView imageCard;
 
@@ -299,6 +391,8 @@ public class ReplyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             childReplyCard = itemView.findViewById(R.id.repliesCard);
             imageCount = itemView.findViewById(R.id.imageCount);
             imageCard = itemView.findViewById(R.id.imageCard);
+            item_reply_delete_img = itemView.findViewById(R.id.item_reply_delete_img);
+            item_reply_delete = itemView.findViewById(R.id.item_reply_delete);
         }
     }
 

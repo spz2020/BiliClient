@@ -72,9 +72,9 @@ public class ReplyApi {
 
             //Log.e("debug-第" + i + "条评论", "--------");
             JSONObject reply = replies.getJSONObject(i);
-            long rpid = reply.getLong("rpid");    //这玩意不能用int，太长了数值溢出！！！有被坑到！！！
             //Log.e("debug-评论id", String.valueOf(rpid));
-            replyReturn.rpid = rpid;
+            replyReturn.rpid = reply.getLong("rpid");
+            replyReturn.oid = reply.getLong("oid");
             JSONObject member = reply.getJSONObject("member");
             String uname = member.getString("uname");
             long mid = member.getLong("mid");
@@ -206,6 +206,26 @@ public class ReplyApi {
         String url = "https://api.bilibili.com/x/v2/reply/action";
         String arg = "oid=" + oid + "&type=1&rpid=" + root + "&action=" + (action ? "1" : "0") + "&jsonp=jsonp&csrf=" + SharedPreferencesUtil.getString("csrf","");
         JSONObject result = new JSONObject(Objects.requireNonNull(NetWorkUtil.post(url, arg, NetWorkUtil.webHeaders).body()).string());
+        Log.e("debug-点赞评论",result.toString());
+        return result.getInt("code");
+    }
+
+    /**
+     * 删除评论
+     * @param oid oid
+     * @param rpid rpid
+     * @param type 评论区类型
+     * @return 返回码
+     */
+    public static int deleteReply(long oid, long rpid, int type) throws IOException, JSONException {
+        String url = "https://api.bilibili.com/x/v2/reply/del";
+        String reqBody = new NetWorkUtil.FormData()
+                .put("type", type)
+                .put("oid", oid)
+                .put("rpid", rpid)
+                .put("csrf", SharedPreferencesUtil.getString("csrf", ""))
+                .toString();
+        JSONObject result = new JSONObject(Objects.requireNonNull(NetWorkUtil.post(url, reqBody, NetWorkUtil.webHeaders).body()).string());
         Log.e("debug-点赞评论",result.toString());
         return result.getInt("code");
     }
