@@ -78,6 +78,7 @@
         app:layout_constraintTop_toTopOf="@+id/likes"
         app:layout_constraintVertical_bias="0.5" />
 
+    <!-- 过于使的布局 但是我不会写 -->
     <ImageView
         android:id="@+id/item_reply_delete_img"
         android:layout_width="18dp"
