@@ -95,7 +95,21 @@ public class MessageApi {
                     replyInfo.childCount = 0;
                     replyInfo.childMsgList = new ArrayList<>();
                     likeInfo.dynamicInfo = replyInfo;
+                } else if (object.getJSONObject("item").getString("type").equals("article")) {
+                    likeInfo.content = "等总共 " + userList.size() + " 人点赞了你的专栏";
+                    // 实在是抽象 但是我没时间改那么多
+                    Reply replyChildInfo = new Reply();
+                    replyChildInfo.rpid = object.getJSONObject("item").getLong("target_id");
+                    replyChildInfo.message = object.getJSONObject("item").getString("title");
+                    replyChildInfo.childCount = 0;
+                    likeInfo.replyInfo = replyChildInfo;
                 }
+                JSONObject item = object.getJSONObject("item");
+                likeInfo.businessId = item.getInt("business_id");
+                likeInfo.subjectId = item.getLong("item_id");
+                likeInfo.itemType = item.getString("type");
+
+                likeInfo.getType = MessageCard.GET_TYPE_LIKE;
                 totalArray.add(likeInfo);
             }
 
@@ -134,7 +148,7 @@ public class MessageApi {
                     Reply replyChildInfo = new Reply();
                     replyChildInfo.rpid = object.getJSONObject("item").getLong("target_id");
                     replyChildInfo.sender = null;
-                    replyChildInfo.message = object.getJSONObject("item").getString("title");
+                    replyChildInfo.message = "[评论] " + object.getJSONObject("item").getString("title");
                     replyChildInfo.emotes = new ArrayList<>();
                     replyChildInfo.pictureList = new ArrayList<>();
                     replyChildInfo.likeCount = 0;
@@ -149,7 +163,7 @@ public class MessageApi {
                     Reply replyChildInfo = new Reply();
                     replyChildInfo.rpid = object.getJSONObject("item").getLong("target_id");
                     replyChildInfo.sender = null;
-                    replyChildInfo.message = object.getJSONObject("item").getString("title");
+                    replyChildInfo.message = "[动态] " + object.getJSONObject("item").getString("title");
                     replyChildInfo.emotes = new ArrayList<>();
                     replyChildInfo.pictureList = new ArrayList<>();
                     replyChildInfo.likeCount = 0;
@@ -160,7 +174,20 @@ public class MessageApi {
                     replyChildInfo.isDynamic = true;
                     replyChildInfo.childMsgList = new ArrayList<>();
                     replyInfo.dynamicInfo = replyChildInfo;
+                } else if (object.getJSONObject("item").getString("type").equals("article")) {
+                    // TODO 实在是抽象 但是我没时间改那么多
+                    Reply replyChildInfo = new Reply();
+                    replyChildInfo.rpid = object.getJSONObject("item").getLong("target_id");
+                    replyChildInfo.message = "[专栏] " + object.getJSONObject("item").getString("title");
+                    replyChildInfo.childCount = 0;
+                    replyInfo.replyInfo = replyChildInfo;
                 }
+                JSONObject item = object.getJSONObject("item");
+                replyInfo.businessId = item.getInt("business_id");
+                replyInfo.subjectId = item.getLong("subject_id");
+                replyInfo.itemType = item.getString("type");
+                replyInfo.getType = MessageCard.GET_TYPE_REPLY;
+
                 totalArray.add(replyInfo);
             }
 
@@ -199,7 +226,7 @@ public class MessageApi {
                     Reply replyChildInfo = new Reply();
                     replyChildInfo.rpid = object.getJSONObject("item").getLong("target_id");
                     replyChildInfo.sender = null;
-                    replyChildInfo.message = object.getJSONObject("item").getString("title");
+                    replyChildInfo.message = "[评论] " + object.getJSONObject("item").getString("title");
                     replyChildInfo.emotes = new ArrayList<>();
                     replyChildInfo.pictureList = new ArrayList<>();
                     replyChildInfo.likeCount = 0;
@@ -214,7 +241,7 @@ public class MessageApi {
                     Reply replyChildInfo = new Reply();
                     replyChildInfo.rpid = object.getJSONObject("item").getLong("target_id");
                     replyChildInfo.sender = null;
-                    replyChildInfo.message = object.getJSONObject("item").getString("title");
+                    replyChildInfo.message = "[动态] " + object.getJSONObject("item").getString("title");
                     replyChildInfo.emotes = new ArrayList<>();
                     replyChildInfo.pictureList = new ArrayList<>();
                     replyChildInfo.likeCount = 0;
@@ -225,7 +252,19 @@ public class MessageApi {
                     replyChildInfo.childCount = 0;
                     replyChildInfo.childMsgList = new ArrayList<>();
                     replyInfo.dynamicInfo = replyChildInfo;
+                } else if (object.getJSONObject("item").getString("type").equals("article")) {
+                    Reply replyChildInfo = new Reply();
+                    replyChildInfo.rpid = object.getJSONObject("item").getLong("target_id");
+                    replyChildInfo.message = "[专栏] " + object.getJSONObject("item").getString("title");
+                    replyChildInfo.childCount = 0;
+                    replyInfo.replyInfo = replyChildInfo;
                 }
+                JSONObject item = object.getJSONObject("item");
+                replyInfo.businessId = item.getInt("business_id");
+                replyInfo.subjectId = item.getLong("subject_id");
+                replyInfo.itemType = item.getString("type");
+                replyInfo.getType = MessageCard.GET_TYPE_AT;
+
                 totalArray.add(replyInfo);
             }
 
