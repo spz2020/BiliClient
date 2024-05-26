@@ -240,6 +240,20 @@ public class DynamicApi {
         }
     }
 
+    public static int deleteDynamic(long dyid) throws IOException {
+        String url = "https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/rm_dynamic";
+        Response resp = Objects.requireNonNull(NetWorkUtil.post(url, new NetWorkUtil.FormData()
+                .put("dynamic_id", dyid)
+                .put("csrf_token", SharedPreferencesUtil.getString("csrf",""))
+                .toString(), NetWorkUtil.webHeaders));
+        try {
+            JSONObject respBody = new JSONObject(resp.body().string());
+            return respBody.getInt("code");
+        } catch (JSONException ignored) {
+            return -1;
+        }
+    }
+
     /**
      * 寻找用户（完全匹配），仍然自己瞎扒的，不清楚是否有更好方案
      * @param name 名称
@@ -267,8 +281,8 @@ public class DynamicApi {
 
     public static long getDynamicList(ArrayList<Dynamic> dynamicList, long offset, long mid) throws IOException, JSONException {
         String url = "https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/"
-                + (mid==0 ? "all?" : "space?host_mid=" + mid)
-                + (offset==0 ? "" : "&offset=" + offset);
+                + (mid==0 ? "all" : "space?host_mid=" + mid)
+                + (offset==0 ? "" : (mid == 0 ? "?offset=" + offset : "&offset=" + offset));
 
         JSONObject all = NetWorkUtil.getJson(url);
         if(all.getInt("code")!=0) throw new JSONException(all.getString("message"));
@@ -439,6 +453,15 @@ public class DynamicApi {
             // TODO 转发&回复
 
             dynamic.stats = stats;
+        }
+
+        if (modules.has("module_more") && !modules.isNull("module_more")) {
+            List<String> supportItemTypes = new ArrayList<>();
+            JSONArray three_point_items = modules.getJSONObject("module_more").getJSONArray("three_point_items");
+            for (int i = 0; i < three_point_items.length(); i++) {
+                supportItemTypes.add(three_point_items.getJSONObject(i).getString("type"));
+            }
+            dynamic.canDelete = supportItemTypes.contains("THREE_POINT_DELETE");
         }
 
         if(dynamic_json.has("orig") && !dynamic_json.isNull("orig")){

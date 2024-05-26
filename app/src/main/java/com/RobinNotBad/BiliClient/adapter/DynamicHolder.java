@@ -45,19 +45,23 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class DynamicHolder extends RecyclerView.ViewHolder{
+    public static final int GO_TO_INFO_REQUEST = 71;
     public TextView username,content,pubdate;
     public ImageView avatar;
     public ConstraintLayout extraCard;
     public View itemView;
-    public ImageView item_dynamic_share_img;
-    public TextView item_dynamic_share;
+    public ImageView item_dynamic_share_img, item_dynamic_delete_img;
+    public TextView item_dynamic_share, item_dynamic_delete;
     public TextView likeCount;
     public boolean isChild;
     BaseActivity mActivity;
     public ActivityResultLauncher<Intent> relayDynamicLauncher;
+
+    private long longClickTime = -1;
 
     public DynamicHolder(@NonNull View itemView, BaseActivity mActivity, boolean isChild) {
         super(itemView);
@@ -79,10 +83,109 @@ public class DynamicHolder extends RecyclerView.ViewHolder{
             item_dynamic_share_img = itemView.findViewById(R.id.item_dynamic_share_img);
             item_dynamic_share = itemView.findViewById(R.id.item_dynamic_share);
             likeCount = itemView.findViewById(R.id.likes);
+            item_dynamic_delete_img = itemView.findViewById(R.id.item_dynamic_delete_img);
+            item_dynamic_delete = itemView.findViewById(R.id.item_dynamic_delete);
             relayDynamicLauncher = mActivity.relayDynamicLauncher;
         }
     }
 
+    public static void removeDynamicFromList(List<Dynamic> dynamicList, int finalPosition, RecyclerView.Adapter<RecyclerView.ViewHolder> adapter) {
+        dynamicList.remove(finalPosition);
+        adapter.notifyItemRemoved(finalPosition + 1);
+        adapter.notifyItemRangeChanged(finalPosition + 1, dynamicList.size() - finalPosition);
+    }
+
+    public static View.OnLongClickListener getDeleteListener(Activity dynamicActivity, List<Dynamic> dynamicList, int finalPosition, RecyclerView.Adapter<RecyclerView.ViewHolder> adapter) {
+        return new View.OnLongClickListener() {
+            private int longClickPosition = -1;
+            private long longClickTime = -1;
+            @Override
+            public boolean onLongClick(View view) {
+                if (dynamicList.get(finalPosition).canDelete) {
+                    long currentTime = System.currentTimeMillis();
+                    if (longClickPosition == finalPosition && currentTime - longClickTime < 10000) {
+                        CenterThreadPool.run(() -> {
+                            try {
+                                int result = DynamicApi.deleteDynamic(dynamicList.get(finalPosition).dynamicId);
+                                if (result == 0) {
+                                    dynamicList.remove(finalPosition);
+                                    dynamicActivity.runOnUiThread(() -> {
+                                        adapter.notifyItemRemoved(finalPosition + 1);
+                                        adapter.notifyItemRangeChanged(finalPosition + 1, dynamicList.size() - finalPosition);
+                                        longClickPosition = -1;
+                                        MsgUtil.toast("删除成功~", dynamicActivity);
+                                    });
+                                } else {
+                                    String msg = "操作失败：" + result;
+                                    switch (result) {
+                                        case 500404:
+                                            msg = "已经删除过了哦~";
+                                            break;
+                                        case 500406:
+                                            msg = "不是自己的动态！";
+                                            break;
+                                    }
+                                    String finalMsg = msg;
+                                    dynamicActivity.runOnUiThread(() -> MsgUtil.toast(finalMsg, dynamicActivity));
+                                }
+                            } catch (IOException e) {
+                                dynamicActivity.runOnUiThread(() -> MsgUtil.err(e, dynamicActivity));
+                            }
+                        });
+                    } else {
+                        longClickPosition = finalPosition;
+                        longClickTime = currentTime;
+                        MsgUtil.toast("再次长按删除", dynamicActivity);
+                    }
+                }
+                return true;
+            }
+        };
+    }
+
+    public static View.OnLongClickListener getDeleteListener(Activity dynamicActivity, Dynamic dynamic) {
+        return new View.OnLongClickListener() {
+            private long longClickTime = -1;
+            @Override
+            public boolean onLongClick(View view) {
+                if (dynamic.canDelete) {
+                    long currentTime = System.currentTimeMillis();
+                    if (currentTime - longClickTime < 10000) {
+                        CenterThreadPool.run(() -> {
+                            try {
+                                int result = DynamicApi.deleteDynamic(dynamic.dynamicId);
+                                if (result == 0) {
+                                    dynamicActivity.runOnUiThread(() -> {
+                                        dynamicActivity.setResult(Activity.RESULT_OK, dynamicActivity.getIntent().getExtras() != null ? new Intent().putExtras(dynamicActivity.getIntent().getExtras()) : new Intent());
+                                        dynamicActivity.finish();
+                                        MsgUtil.toast("删除成功~", dynamicActivity);
+                                    });
+                                } else {
+                                    String msg = "操作失败：" + result;
+                                    switch (result) {
+                                        case 500404:
+                                            msg = "已经删除过了哦~";
+                                            break;
+                                        case 500406:
+                                            msg = "不是自己的动态！";
+                                            break;
+                                    }
+                                    String finalMsg = msg;
+                                    dynamicActivity.runOnUiThread(() -> MsgUtil.toast(finalMsg, dynamicActivity));
+                                }
+                            } catch (IOException e) {
+                                dynamicActivity.runOnUiThread(() -> MsgUtil.err(e, dynamicActivity));
+                            }
+                        });
+                    } else {
+                        longClickTime = currentTime;
+                        MsgUtil.toast("再次长按删除", dynamicActivity);
+                    }
+                }
+                return true;
+            }
+        };
+    }
 
     @SuppressLint("SetTextI18n")
     public void showDynamic(Dynamic dynamic, Context context, boolean clickable){    //公用的显示函数 这样修改和调用都方便
@@ -180,7 +283,12 @@ public class DynamicHolder extends RecyclerView.ViewHolder{
                     Intent intent = new Intent();
                     intent.setClass(context, DynamicInfoActivity.class);
                     intent.putExtra("id", dynamic.dynamicId);
-                    context.startActivity(intent);
+                    intent.putExtra("position", getAdapterPosition());
+                    if (context instanceof Activity) {
+                        ((Activity) context).startActivityForResult(intent, GO_TO_INFO_REQUEST);
+                    } else {
+                        context.startActivity(intent);
+                    }
                 });
                 content.setOnClickListener(view -> (isChild ? itemView.findViewById(R.id.cardView) : itemView).callOnClick());
             }
@@ -205,6 +313,19 @@ public class DynamicHolder extends RecyclerView.ViewHolder{
         if (item_dynamic_share != null && item_dynamic_share_img != null) {
             item_dynamic_share.setOnClickListener(onRelayClick);
             item_dynamic_share_img.setOnClickListener(onRelayClick);
+        }
+
+        View.OnClickListener onDeleteClick = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MsgUtil.toast("长按删除", context);
+            }
+        };
+        if (item_dynamic_delete != null && item_dynamic_delete_img != null) {
+            item_dynamic_delete.setOnClickListener(onDeleteClick);
+            item_dynamic_delete_img.setOnClickListener(onDeleteClick);
+            item_dynamic_delete.setVisibility(View.GONE);
+            item_dynamic_delete_img.setVisibility(View.GONE);
         }
 
         if (likeCount != null) {

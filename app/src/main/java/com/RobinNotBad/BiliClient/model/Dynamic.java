@@ -22,6 +22,7 @@ public class Dynamic implements Serializable {
     public Object major_object;
     public Dynamic dynamic_forward;
     public List<At> ats;
+    public boolean canDelete;
 
     public Dynamic(){}
 }

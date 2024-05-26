@@ -1,6 +1,7 @@
 package com.RobinNotBad.BiliClient.adapter;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -18,7 +19,9 @@ import com.RobinNotBad.BiliClient.R;
 import com.RobinNotBad.BiliClient.activity.ImageViewerActivity;
 import com.RobinNotBad.BiliClient.activity.base.BaseActivity;
 import com.RobinNotBad.BiliClient.activity.message.PrivateMsgActivity;
+import com.RobinNotBad.BiliClient.api.DynamicApi;
 import com.RobinNotBad.BiliClient.api.UserInfoApi;
+import com.RobinNotBad.BiliClient.listener.OnItemLongClickListener;
 import com.RobinNotBad.BiliClient.model.Dynamic;
 import com.RobinNotBad.BiliClient.model.UserInfo;
 import com.RobinNotBad.BiliClient.util.CenterThreadPool;
@@ -31,6 +34,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.button.MaterialButton;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 //用户信息页专用Adapter 独立出来也是为了做首项不同
@@ -41,8 +45,8 @@ public class UserInfoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     ArrayList<Dynamic> dynamicList;
     UserInfo userInfo;
     boolean desc_expand, notice_expand;
-
     boolean follow_onprocess;
+    private int longClickPosition = -1;
 
     public UserInfoAdapter(Context context, ArrayList<Dynamic> dynamicList, UserInfo userInfo) {
         this.context = context;
@@ -76,6 +80,14 @@ public class UserInfoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 View childCard = View.inflate(context,R.layout.cell_dynamic_child,dynamicHolder.extraCard);
                 DynamicHolder childHolder = new DynamicHolder(childCard, (BaseActivity) context, true);
                 childHolder.showDynamic(dynamicList.get(realPosition).dynamic_forward, context, true);
+            }
+
+            View.OnLongClickListener onDeleteLongClick = DynamicHolder.getDeleteListener((Activity) context, dynamicList, realPosition, this);
+            dynamicHolder.item_dynamic_delete_img.setOnLongClickListener(onDeleteLongClick);
+            dynamicHolder.item_dynamic_delete.setOnLongClickListener(onDeleteLongClick);
+            if (dynamicList.get(position).canDelete) {
+                dynamicHolder.item_dynamic_delete.setVisibility(View.VISIBLE);
+                dynamicHolder.item_dynamic_delete_img.setVisibility(View.VISIBLE);
             }
         }
         if (holder instanceof UserInfoHolder){
@@ -156,6 +168,7 @@ public class UserInfoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 else userInfoHolder.userNotice.setMaxLines(32);
                 notice_expand = !notice_expand;
             });
+
         }
     }
 
