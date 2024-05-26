@@ -27,7 +27,7 @@ public class VideoReplyFragment extends RefreshListFragment {
     protected int type;
     protected ArrayList<Reply> replyList;
     protected ReplyAdapter replyAdapter;
-    public boolean isDynamic = false;
+    public int replyType = ReplyApi.REPLY_TYPE_VIDEO;
 
     public VideoReplyFragment() {
 
@@ -58,6 +58,7 @@ public class VideoReplyFragment extends RefreshListFragment {
         if (getArguments() != null) {
             aid = getArguments().getLong("aid");
             type = getArguments().getInt("type");
+            replyType = type;
             dontload = getArguments().getBoolean("dontload",false);
         }
     }
@@ -95,7 +96,7 @@ public class VideoReplyFragment extends RefreshListFragment {
     }
 
     private ReplyAdapter getReplyAdapter() {
-        return new ReplyAdapter(requireContext(), replyList, aid, 0, type, sort, isDynamic);
+        return new ReplyAdapter(requireContext(), replyList, aid, 0, type, sort, replyType);
     }
 
     @SuppressLint("NotifyDataSetChanged")

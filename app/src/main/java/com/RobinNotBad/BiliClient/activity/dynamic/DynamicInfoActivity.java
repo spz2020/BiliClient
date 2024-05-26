@@ -16,6 +16,7 @@ import com.RobinNotBad.BiliClient.activity.base.BaseActivity;
 import com.RobinNotBad.BiliClient.activity.video.info.VideoReplyFragment;
 import com.RobinNotBad.BiliClient.adapter.ViewPagerFragmentAdapter;
 import com.RobinNotBad.BiliClient.api.DynamicApi;
+import com.RobinNotBad.BiliClient.api.ReplyApi;
 import com.RobinNotBad.BiliClient.model.Dynamic;
 import com.RobinNotBad.BiliClient.util.CenterThreadPool;
 import com.RobinNotBad.BiliClient.util.MsgUtil;
@@ -49,7 +50,7 @@ public class DynamicInfoActivity extends BaseActivity {
                 DynamicInfoFragment diFragment = DynamicInfoFragment.newInstance(dynamic);
                 fragmentList.add(diFragment);
                 VideoReplyFragment rFragment = VideoReplyFragment.newInstance(dynamic.comment_id, dynamic.comment_type);
-                rFragment.isDynamic = true;
+                rFragment.replyType = ReplyApi.REPLY_TYPE_DYNAMIC;
                 fragmentList.add(rFragment);
 
                 ViewPagerFragmentAdapter vpfAdapter = new ViewPagerFragmentAdapter(getSupportFragmentManager(), fragmentList);

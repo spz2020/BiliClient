@@ -30,6 +30,10 @@ import java.util.Objects;
 
 public class ReplyApi {
 
+    public static final int REPLY_TYPE_VIDEO = 1;
+    public static final int REPLY_TYPE_ARTICLE = 12;
+    public static final int REPLY_TYPE_DYNAMIC = 17;
+
     //oid：评论区id，可以是视频aid
     //rpid：若要查看子评论，这个参数是父评论的id，否则填0
     //sort：评论区排序方式，0=时间；1=点赞数量；2=回复数量
@@ -191,11 +195,11 @@ public class ReplyApi {
     }
 
     public static int sendReply(long oid, long root, long parent, String text) throws IOException, JSONException {
-        return sendReply(oid, root, parent, text, 1);
+        return sendReply(oid, root, parent, text, REPLY_TYPE_VIDEO);
     }
 
     public static int sendDynamicReply(long oid, long root, long parent, String text) throws IOException, JSONException {
-        return sendReply(oid, root, parent, text, 17);
+        return sendReply(oid, root, parent, text, REPLY_TYPE_DYNAMIC);
     }
 
     public static int likeReply(long oid, long root, boolean action) throws IOException, JSONException {

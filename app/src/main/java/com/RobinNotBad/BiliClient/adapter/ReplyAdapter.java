@@ -52,21 +52,21 @@ public class ReplyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     ArrayList<Reply> replyList;
     long oid, root;
     int type, sort;
-    public boolean isDynamic;
+    public int replyType;
     OnItemClickListener listener;
 
-    public ReplyAdapter(Context context, ArrayList<Reply> replyList, long oid, long root, int type, int sort, boolean isDynamic) {
+    public ReplyAdapter(Context context, ArrayList<Reply> replyList, long oid, long root, int type, int sort, int replyType) {
         this.context = context;
         this.replyList = replyList;
         this.oid = oid;
         this.root = root;
         this.type = type;
         this.sort = sort;
-        this.isDynamic = isDynamic;
+        this.replyType = type;
     }
 
     public ReplyAdapter(Context context, ArrayList<Reply> replyList, long oid, long root, int type, int sort) {
-        this(context, replyList, oid, root, type, sort, false);
+        this(context, replyList, oid, root, type, sort, ReplyApi.REPLY_TYPE_VIDEO);
     }
 
     public void setOnSortSwitchListener(OnItemClickListener listener){
@@ -98,7 +98,7 @@ public class ReplyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 intent.putExtra("rpid",root);
                 intent.putExtra("parent",root);
                 intent.putExtra("parentSender","");
-                intent.putExtra("isDynamic", isDynamic);
+                intent.putExtra("replyType", replyType);
                 context.startActivity(intent);
             });
             String[] sorts = {"时间排序","点赞排序","回复排序"};
@@ -249,7 +249,7 @@ public class ReplyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 intent.putExtra("oid",oid);
                 intent.putExtra("rpid",replyList.get(realPosition).rpid);
                 intent.putExtra("parent",replyList.get(realPosition).rpid);
-                intent.putExtra("isDynamic", isDynamic);
+                intent.putExtra("replyType", replyType);
                 if(root!=0) intent.putExtra("parentSender",replyList.get(realPosition).sender.name);
                 else intent.putExtra("parentSender","");
                 context.startActivity(intent);

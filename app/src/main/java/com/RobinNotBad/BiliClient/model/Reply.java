@@ -1,5 +1,7 @@
 package com.RobinNotBad.BiliClient.model;
 
+import com.RobinNotBad.BiliClient.api.ReplyApi;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +20,7 @@ public class Reply {
     public boolean upReplied;
     public boolean liked;
     public int childCount;
-    public boolean isDynamic = false;
+    public boolean isDynamic;
     public ArrayList<String> childMsgList;
 
     public Reply(){}

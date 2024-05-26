@@ -44,7 +44,7 @@ public class WriteReplyActivity extends BaseActivity {
         long oid = intent.getLongExtra("oid",0);
         long rpid = intent.getLongExtra("rpid",0);
         long parent = intent.getLongExtra("parent",0);
-        boolean isDynamic = intent.getBooleanExtra("isDynamic", false);
+        int replyType = intent.getIntExtra("replyType", ReplyApi.REPLY_TYPE_VIDEO);
         String parentSender = intent.getStringExtra("parentSender");
 
         EditText editText = findViewById(R.id.editText);
@@ -63,12 +63,7 @@ public class WriteReplyActivity extends BaseActivity {
 
                                 Log.e("debug-评论内容",text);
 
-                                int result;
-                                if (isDynamic) {
-                                    result = ReplyApi.sendDynamicReply(oid, rpid, parent, text);
-                                } else {
-                                    result = ReplyApi.sendReply(oid, rpid, parent, text);
-                                }
+                                int result = ReplyApi.sendReply(oid, rpid, parent, text, replyType);
 
                                 sent = true;
 

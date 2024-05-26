@@ -42,7 +42,7 @@ public class ArticleInfoActivity extends BaseActivity {
                 List<Fragment> fragmentList = new ArrayList<>();
                 ArticleInfoFragment articleInfoFragment = ArticleInfoFragment.newInstance(cvid);
                 fragmentList.add(articleInfoFragment);
-                VideoReplyFragment vrFragment = VideoReplyFragment.newInstance(cvid,12);
+                VideoReplyFragment vrFragment = VideoReplyFragment.newInstance(cvid, 12);
                 fragmentList.add(vrFragment);
 
                 runOnUiThread(() -> {
