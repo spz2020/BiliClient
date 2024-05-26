@@ -178,10 +178,12 @@ public class ReplyInfoActivity extends BaseActivity {
 
     @Subscribe(threadMode = ThreadMode.ASYNC, sticky = true, priority = 1)
     public void onEvent(ReplyEvent event){
-        replyList.add(0, event.getMessage());
+        replyList.add(1, event.getMessage());
         runOnUiThread(() -> {
-            replyAdapter.notifyItemInserted(0);
-            replyAdapter.notifyItemRangeChanged(0, replyList.size());
+            if (replyAdapter != null) {
+                replyAdapter.notifyItemInserted(0);
+                replyAdapter.notifyItemRangeChanged(0, replyList.size());
+            }
         });
     }
 }

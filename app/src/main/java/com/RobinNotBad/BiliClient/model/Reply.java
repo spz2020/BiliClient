@@ -12,6 +12,7 @@ public class Reply implements Serializable {
     public long oid;
     public long root;
     public long parent;
+    public boolean forceDelete;
     public String ofBvid = "";
     public String pubTime;
     public UserInfo sender;

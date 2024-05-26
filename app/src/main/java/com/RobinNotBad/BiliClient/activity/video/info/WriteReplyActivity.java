@@ -78,6 +78,7 @@ public class WriteReplyActivity extends BaseActivity {
 
                                 if (resultCode == 0) {
                                     runOnUiThread(() -> MsgUtil.toast("发送成功>w<",this));
+                                    resultReply.forceDelete = true;
                                     if (resultReply != null) EventBus.getDefault().post(new ReplyEvent(1, resultReply));
                                     finish();
                                 } else {

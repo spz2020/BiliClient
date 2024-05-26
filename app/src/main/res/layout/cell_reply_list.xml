@@ -29,7 +29,7 @@
         app:layout_constraintStart_toEndOf="@+id/replyAvatar"
         app:layout_constraintTop_toTopOf="@id/replyAvatar" />
 
-    <TextView
+    <com.RobinNotBad.BiliClient.view.MarqueeTextView
         android:id="@+id/replyPubDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

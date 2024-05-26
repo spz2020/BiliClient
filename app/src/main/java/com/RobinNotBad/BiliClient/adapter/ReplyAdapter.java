@@ -307,7 +307,7 @@ public class ReplyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             };
             replyHolder.item_reply_delete_img.setOnLongClickListener(onDeleteLongClick);
             replyHolder.item_reply_delete.setOnLongClickListener(onDeleteLongClick);
-            if (!(replyList.get(realPosition).sender.mid == SharedPreferencesUtil.getLong(SharedPreferencesUtil.mid,0)) || replyList.get(realPosition).sender.mid == 0) {
+            if (!(replyList.get(realPosition).sender.mid == SharedPreferencesUtil.getLong(SharedPreferencesUtil.mid,0)) || replyList.get(realPosition).sender.mid == 0 || replyList.get(realPosition).forceDelete) {
                 replyHolder.item_reply_delete_img.setVisibility(View.GONE);
                 replyHolder.item_reply_delete.setVisibility(View.GONE);
                 CenterThreadPool.run(() -> {
