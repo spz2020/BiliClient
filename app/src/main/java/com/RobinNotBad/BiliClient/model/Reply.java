@@ -2,13 +2,16 @@ package com.RobinNotBad.BiliClient.model;
 
 import com.RobinNotBad.BiliClient.api.ReplyApi;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class Reply {
+public class Reply implements Serializable {
     public long rpid;
     public long oid;
+    public long root;
+    public long parent;
     public String ofBvid = "";
     public String pubTime;
     public UserInfo sender;

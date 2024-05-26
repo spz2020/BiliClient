@@ -1,13 +1,10 @@
 package com.RobinNotBad.BiliClient.activity.dynamic;
 
-import static com.RobinNotBad.BiliClient.activity.dynamic.DynamicActivity.getRelayDynamicLauncher;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
@@ -17,10 +14,15 @@ import com.RobinNotBad.BiliClient.activity.video.info.VideoReplyFragment;
 import com.RobinNotBad.BiliClient.adapter.ViewPagerFragmentAdapter;
 import com.RobinNotBad.BiliClient.api.DynamicApi;
 import com.RobinNotBad.BiliClient.api.ReplyApi;
+import com.RobinNotBad.BiliClient.event.ReplyEvent;
 import com.RobinNotBad.BiliClient.model.Dynamic;
 import com.RobinNotBad.BiliClient.util.CenterThreadPool;
 import com.RobinNotBad.BiliClient.util.MsgUtil;
 import com.RobinNotBad.BiliClient.util.SharedPreferencesUtil;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +32,7 @@ import java.util.List;
 
 public class DynamicInfoActivity extends BaseActivity {
 
+    VideoReplyFragment rFragment;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -49,7 +52,7 @@ public class DynamicInfoActivity extends BaseActivity {
                 List<Fragment> fragmentList = new ArrayList<>();
                 DynamicInfoFragment diFragment = DynamicInfoFragment.newInstance(dynamic);
                 fragmentList.add(diFragment);
-                VideoReplyFragment rFragment = VideoReplyFragment.newInstance(dynamic.comment_id, dynamic.comment_type);
+                rFragment = VideoReplyFragment.newInstance(dynamic.comment_id, dynamic.comment_type);
                 rFragment.replyType = ReplyApi.REPLY_TYPE_DYNAMIC;
                 fragmentList.add(rFragment);
 
@@ -69,6 +72,16 @@ public class DynamicInfoActivity extends BaseActivity {
                 runOnUiThread(() -> MsgUtil.err(e,this));
             }
         });
-
     }
+
+    @Override
+    protected boolean eventBusEnabled() {
+        return true;
+    }
+
+    @Subscribe(threadMode = ThreadMode.ASYNC, sticky = true, priority = 1)
+    public void onEvent(ReplyEvent event){
+        rFragment.notifyReplyInserted(event.getMessage());
+    }
+
 }

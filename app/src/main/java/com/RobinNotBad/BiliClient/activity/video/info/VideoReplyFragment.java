@@ -121,6 +121,15 @@ public class VideoReplyFragment extends RefreshListFragment {
         });
     }
 
+    public void notifyReplyInserted(Reply reply) {
+        if (reply.root != 0) return;
+        replyList.add(0, reply);
+        runOnUiThread(() -> {
+            replyAdapter.notifyItemInserted(0);
+            replyAdapter.notifyItemRangeChanged(0, replyList.size());
+        });
+    }
+
     public void refresh(long aid){
         page = 1;
         this.aid = aid;

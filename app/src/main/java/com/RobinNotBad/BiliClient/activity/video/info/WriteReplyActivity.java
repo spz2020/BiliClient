@@ -3,16 +3,22 @@ package com.RobinNotBad.BiliClient.activity.video.info;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Pair;
 import android.widget.EditText;
 
 import com.RobinNotBad.BiliClient.R;
 import com.RobinNotBad.BiliClient.activity.base.BaseActivity;
 import com.RobinNotBad.BiliClient.api.ReplyApi;
+import com.RobinNotBad.BiliClient.event.ReplyEvent;
+import com.RobinNotBad.BiliClient.model.Reply;
 import com.RobinNotBad.BiliClient.util.CenterThreadPool;
 import com.RobinNotBad.BiliClient.util.MsgUtil;
 import com.RobinNotBad.BiliClient.util.SharedPreferencesUtil;
 import com.google.android.material.card.MaterialCardView;
 
+import org.greenrobot.eventbus.EventBus;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +32,7 @@ public class WriteReplyActivity extends BaseActivity {
         put(12016,"包含敏感内容！");
         put(12025,"字数过多啦QAQ");
         put(12035,"被拉黑了...");
+        put(12051, "重复评论，请勿刷屏！");
     }};
 
     boolean sent = false;
@@ -63,16 +70,18 @@ public class WriteReplyActivity extends BaseActivity {
 
                                 Log.e("debug-评论内容",text);
 
-                                int result = ReplyApi.sendReply(oid, rpid, parent, text, replyType);
+                                Pair<Integer, Reply> result = ReplyApi.sendReply(oid, rpid, parent, text, replyType);
+                                int resultCode = result.first;
+                                Reply resultReply = result.second;
 
                                 sent = true;
 
-                                if(result==0) {
+                                if (resultCode == 0) {
                                     runOnUiThread(() -> MsgUtil.toast("发送成功>w<",this));
+                                    if (resultReply != null) EventBus.getDefault().post(new ReplyEvent(1, resultReply));
                                     finish();
-                                }
-                                else {
-                                    String toast_msg = "评论发送失败：\n" + (msgMap.containsKey(result) ? msgMap.get(result) : result);
+                                } else {
+                                    String toast_msg = "评论发送失败：\n" + (msgMap.containsKey(resultCode) ? msgMap.get(resultCode) : resultCode);
                                     runOnUiThread(() -> MsgUtil.toast(toast_msg,this));
                                 }
                             } catch (Exception e) {

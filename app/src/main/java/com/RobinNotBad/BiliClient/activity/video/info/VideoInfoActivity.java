@@ -15,11 +15,14 @@ import com.RobinNotBad.BiliClient.R;
 import com.RobinNotBad.BiliClient.activity.base.BaseActivity;
 import com.RobinNotBad.BiliClient.adapter.ViewPagerFragmentAdapter;
 import com.RobinNotBad.BiliClient.api.VideoInfoApi;
+import com.RobinNotBad.BiliClient.event.ReplyEvent;
 import com.RobinNotBad.BiliClient.model.VideoInfo;
 import com.RobinNotBad.BiliClient.util.CenterThreadPool;
 import com.RobinNotBad.BiliClient.util.MsgUtil;
 import com.RobinNotBad.BiliClient.util.SharedPreferencesUtil;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -135,5 +138,14 @@ public class VideoInfoActivity extends BaseActivity {
         if(replyFragment!=null) runOnUiThread(()->replyFragment.refresh(aid));
     }
 
+    @Override
+    protected boolean eventBusEnabled() {
+        return true;
+    }
+
+    @Subscribe(threadMode = ThreadMode.ASYNC, sticky = true, priority = 1)
+    public void onEvent(ReplyEvent event){
+        replyFragment.notifyReplyInserted(event.getMessage());
+    }
 
 }

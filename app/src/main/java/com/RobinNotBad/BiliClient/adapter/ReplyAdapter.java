@@ -54,6 +54,7 @@ import java.util.concurrent.ExecutionException;
 
 public class ReplyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    public boolean isDetail = false;
     Context context;
     ArrayList<Reply> replyList;
     long oid, root;
@@ -85,8 +86,7 @@ public class ReplyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         if(viewType == 0){
             View view = LayoutInflater.from(this.context).inflate(R.layout.cell_reply_action,parent,false);
             return new WriteReply(view);
-        }
-        else{
+        } else {
             View view = LayoutInflater.from(this.context).inflate(R.layout.cell_reply_list,parent,false);
             return new ReplyHolder(view);
         }
@@ -114,7 +114,13 @@ public class ReplyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             });
         }
         if(holder instanceof ReplyHolder) {
-            int realPosition = position - 1;
+            int tmpPosition;
+            if (isDetail) {
+                tmpPosition = position != 0 ? position - 1 : 0;
+            } else {
+                tmpPosition = position - 1;
+            }
+            int realPosition = tmpPosition;
             ReplyHolder replyHolder = (ReplyHolder) holder;
 
             Glide.with(context).load(GlideUtil.url(replyList.get(realPosition).sender.avatar))
@@ -123,7 +129,6 @@ public class ReplyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .into(replyHolder.replyAvatar);
             replyHolder.userName.setText(replyList.get(realPosition).sender.name);
-
 
             String text = replyList.get(realPosition).message;
             replyHolder.message.setText(text);  //防止加载速度慢时露出鸡脚
@@ -147,13 +152,12 @@ public class ReplyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 });
             }
 
-
             ToolsUtil.setLink(replyHolder.message);
             ToolsUtil.setAtLink(replyList.get(realPosition).atNameToMid, replyHolder.message);
 
             replyHolder.likeCount.setText(String.valueOf(replyList.get(realPosition).likeCount));
 
-            if (replyList.get(realPosition).liked){           //这里，还有下面，一定要加else！否则会导致错乱
+            if (replyList.get(realPosition).liked) {
                 replyHolder.likeCount.setTextColor(Color.rgb(0xfe,0x67,0x9a));
                 replyHolder.likeCount.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(context,R.drawable.icon_liked),null,null,null);
             } else {
@@ -161,7 +165,7 @@ public class ReplyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 replyHolder.likeCount.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(context,R.drawable.icon_like),null,null,null);
             }
 
-            if (replyList.get(realPosition).childCount != 0) {
+            if (replyList.get(realPosition).childCount != 0 && !(realPosition == 0 && isDetail)) {
                 replyHolder.childReplyCard.setVisibility(View.VISIBLE);
 
                 if (replyList.get(realPosition).upReplied) replyHolder.childCount.setText("UP主在内 共" + replyList.get(realPosition).childCount + "条回复");
@@ -198,11 +202,15 @@ public class ReplyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             }
 
             replyHolder.childReplyCard.setOnClickListener(view -> {
-                startReplyInfoActivity(replyList.get(realPosition).rpid, oid, type);
+                startReplyInfoActivity(replyList.get(realPosition));
             });
             replyHolder.childReplies.setOnItemClickListener((adapterView, view, i, l) -> {
-                startReplyInfoActivity(replyList.get(realPosition).rpid, oid, type);
+                startReplyInfoActivity(replyList.get(realPosition));
             });
+            if (!isDetail) {
+                replyHolder.itemView.setOnClickListener((view) -> startReplyInfoActivity(replyList.get(realPosition)));
+                replyHolder.message.setOnClickListener((view) -> startReplyInfoActivity(replyList.get(realPosition)));
+            }
 
             replyHolder.replyAvatar.setOnClickListener(view -> {
                 Intent intent = new Intent();
@@ -349,12 +357,16 @@ public class ReplyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
     }
 
-    public void startReplyInfoActivity(long rpid, long oid, int type) {
+    public void startReplyInfoActivity(Reply reply) {
+        long rpid = reply.rpid;
+        long oid = reply.oid;
+        int type = replyType;
         Intent intent = new Intent();
         intent.setClass(context, ReplyInfoActivity.class);
         intent.putExtra("rpid", rpid);
         intent.putExtra("oid", oid);
         intent.putExtra("type",type);
+        intent.putExtra("origReply", reply);
         context.startActivity(intent);
     }
     @Override
@@ -364,7 +376,12 @@ public class ReplyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public int getItemViewType(int position) {
-        return (position == 0 ? 0 : 1);
+        if (isDetail && position == 1) {
+            return 0;
+        } else if (!isDetail && position == 0) {
+            return 0;
+        }
+         return 1;
     }
 
     public static class ReplyHolder extends RecyclerView.ViewHolder{
