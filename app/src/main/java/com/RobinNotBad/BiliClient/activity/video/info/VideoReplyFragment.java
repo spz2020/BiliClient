@@ -149,7 +149,7 @@ public class VideoReplyFragment extends RefreshListFragment {
                         Log.e("debug","到底了");
                         bottom = true;
                     }
-                    else bottom=false;
+                    else bottom = false;
                 }
             } catch (Exception e) {
                 loadFail(e);
