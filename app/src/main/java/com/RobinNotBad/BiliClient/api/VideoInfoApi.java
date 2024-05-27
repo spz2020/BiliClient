@@ -168,7 +168,7 @@ public class VideoInfoApi {
         videoInfo.argueMsg = data.getJSONObject("argue_info").getString("argue_msg");
 
         try {
-            if((!data.getString("redirect_url").isEmpty()) && (data.getString("redirect_url").contains("bangumi"))) videoInfo.epid = Long.parseLong(data.getString("redirect_url").replace("https://www.bilibili.com/bangumi/play/ep",""));
+            if (data.has("redirect_url") && (!data.getString("redirect_url").isEmpty()) && (data.getString("redirect_url").contains("bangumi"))) videoInfo.epid = Long.parseLong(data.getString("redirect_url").replace("https://www.bilibili.com/bangumi/play/ep",""));
             else videoInfo.epid = -1;
         } catch (Exception e){
             e.printStackTrace();
