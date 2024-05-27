@@ -85,7 +85,7 @@ public class ReplyInfoActivity extends BaseActivity {
                                 super.onScrolled(recyclerView, dx, dy);
                                 LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
                                 assert manager != null;
-                                int lastItemPosition = manager.findLastVisibleItemPosition();  //获取最后一个完全显示的itemPosition
+                                int lastItemPosition = manager.findLastVisibleItemPosition();  //获取最后一个显示的itemPosition
                                 int itemCount = manager.getItemCount();
                                 if (lastItemPosition >= (itemCount - 3) && dy > 0 && !refreshing && !bottom) {// 滑动到倒数第三个就可以刷新了
                                     refreshing = true;
