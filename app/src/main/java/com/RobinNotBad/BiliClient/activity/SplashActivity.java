@@ -49,52 +49,66 @@ public class SplashActivity extends Activity {
 
         splashText = findViewById(R.id.splashText);
 
-        CenterThreadPool.run(()->{
+        if (SharedPreferencesUtil.getBoolean(SharedPreferencesUtil.DISABLE_NETWORK_CHECK, false)) {
+            CenterThreadPool.run(() -> {
+                if (SharedPreferencesUtil.getLong("mid", 0) != 0) checkCookie();
+            });
 
-            //FileUtil.clearCache(this);  //先清个缓存（为了防止占用过大）
-            //不需要了，我把大部分图片的硬盘缓存都关闭了，只有表情包保留，这样既可以缩减缓存占用又能在一定程度上减少流量消耗
+            Intent intent = new Intent();
+            intent.setClass(SplashActivity.this, RecommendActivity.class);   //已登录且联网，去首页
+            startActivity(intent);
 
-            if(SharedPreferencesUtil.getBoolean(SharedPreferencesUtil.setup,false)) {//判断是否设置完成
-                try {
+            CenterThreadPool.run(() -> AppInfoApi.check(getApplicationContext()));
 
-                    NetWorkUtil.get("https://api.bilibili.com", NetWorkUtil.webHeaders);
+            finish();
+        } else {
+            CenterThreadPool.run(()->{
 
-                    if (SharedPreferencesUtil.getLong("mid", 0) != 0) checkCookie();
+                //FileUtil.clearCache(this);  //先清个缓存（为了防止占用过大）
+                //不需要了，我把大部分图片的硬盘缓存都关闭了，只有表情包保留，这样既可以缩减缓存占用又能在一定程度上减少流量消耗
 
-                    Intent intent = new Intent();
-                    intent.setClass(SplashActivity.this, RecommendActivity.class);   //已登录且联网，去首页
-                    startActivity(intent);
+                if(SharedPreferencesUtil.getBoolean(SharedPreferencesUtil.setup,false)) {//判断是否设置完成
+                    try {
 
-                    CenterThreadPool.run(() -> AppInfoApi.check(SplashActivity.this));
+                        NetWorkUtil.get("https://api.bilibili.com/x/web-interface/view", NetWorkUtil.webHeaders);
 
-                    finish();
-                } catch (IOException e) {
-                    runOnUiThread(()-> {
-                        MsgUtil.err(e,this);
-                        splashText.setText("网络错误");
-                        if(SharedPreferencesUtil.getBoolean("setup",false)){
-                            Timer timer = new Timer();
-                            timer.schedule(new TimerTask() {
-                                @Override
-                                public void run() {
-                                    Intent intent = new Intent();
-                                    intent.setClass(SplashActivity.this, LocalListActivity.class);
-                                    startActivity(intent);
-                                    finish();
-                                }
-                            },200);
-                        }
-                    });
+                        if (SharedPreferencesUtil.getLong("mid", 0) != 0) checkCookie();
+
+                        Intent intent = new Intent();
+                        intent.setClass(SplashActivity.this, RecommendActivity.class);   //已登录且联网，去首页
+                        startActivity(intent);
+
+                        CenterThreadPool.run(() -> AppInfoApi.check(SplashActivity.this));
+
+                        finish();
+                    } catch (IOException e) {
+                        runOnUiThread(()-> {
+                            MsgUtil.err(e,this);
+                            splashText.setText("网络错误");
+                            if(SharedPreferencesUtil.getBoolean("setup",false)){
+                                Timer timer = new Timer();
+                                timer.schedule(new TimerTask() {
+                                    @Override
+                                    public void run() {
+                                        Intent intent = new Intent();
+                                        intent.setClass(SplashActivity.this, LocalListActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+                                },200);
+                            }
+                        });
+                    }
                 }
-            }
-            else {
-                Intent intent = new Intent();
-                intent.setClass(SplashActivity.this, SetupUIActivity.class);   //没登录，去初次设置
-                startActivity(intent);
-                finish();
-            }
+                else {
+                    Intent intent = new Intent();
+                    intent.setClass(SplashActivity.this, SetupUIActivity.class);   //没登录，去初次设置
+                    startActivity(intent);
+                    finish();
+                }
 
-        });
+            });
+        }
     }
 
     private void checkCookie() {
