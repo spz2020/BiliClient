@@ -213,9 +213,9 @@ public class NetWorkUtil
     }
 
     public static final String USER_AGENT_WEB = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.6045.160 Safari/537.36";
-    public static ArrayList<String> webHeaders = new ArrayList<String>() {{
+    public static ArrayList<String> webHeaders = new ArrayList<>() {{
         add("Cookie");
-        add(SharedPreferencesUtil.getString(SharedPreferencesUtil.cookies,""));
+        add(SharedPreferencesUtil.getString(SharedPreferencesUtil.cookies, ""));
         add("Referer");
         add("https://www.bilibili.com/");
         add("User-Agent");
@@ -228,7 +228,7 @@ public class NetWorkUtil
         webHeaders.set(1,SharedPreferencesUtil.getString(SharedPreferencesUtil.cookies,""));
     }
     public static class FormData {
-        private Map<String, String> data;
+        private final Map<String, String> data;
 
         public FormData() {
             data = new HashMap<>();

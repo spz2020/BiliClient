@@ -57,7 +57,7 @@ public class SplashActivity extends Activity {
             if(SharedPreferencesUtil.getBoolean(SharedPreferencesUtil.setup,false)) {//判断是否设置完成
                 try {
 
-                    NetWorkUtil.get("https://www.bilibili.com", NetWorkUtil.webHeaders);
+                    NetWorkUtil.get("https://api.bilibili.com", NetWorkUtil.webHeaders);
 
                     if (SharedPreferencesUtil.getLong("mid", 0) != 0) checkCookie();
 
