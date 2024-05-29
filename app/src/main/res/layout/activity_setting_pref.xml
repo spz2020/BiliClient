@@ -333,7 +333,9 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- 先隐藏了 -->
             <com.google.android.material.card.MaterialCardView
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <LinearLayout
