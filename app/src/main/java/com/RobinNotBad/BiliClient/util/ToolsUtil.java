@@ -1,5 +1,14 @@
 package com.RobinNotBad.BiliClient.util;
 
+import static com.RobinNotBad.BiliClient.util.LinkUrlUtil.AV_PATTERN;
+import static com.RobinNotBad.BiliClient.util.LinkUrlUtil.BV_PATTERN;
+import static com.RobinNotBad.BiliClient.util.LinkUrlUtil.CV_PATTERN;
+import static com.RobinNotBad.BiliClient.util.LinkUrlUtil.TYPE_AVID;
+import static com.RobinNotBad.BiliClient.util.LinkUrlUtil.TYPE_BVID;
+import static com.RobinNotBad.BiliClient.util.LinkUrlUtil.TYPE_CVID;
+import static com.RobinNotBad.BiliClient.util.LinkUrlUtil.TYPE_USER;
+import static com.RobinNotBad.BiliClient.util.LinkUrlUtil.TYPE_WEB_URL;
+
 import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -139,9 +148,6 @@ public class ToolsUtil {
         }
     }
 
-    private static final Pattern bvPattern = Pattern.compile("BV[A-Za-z0-9]{10}");
-    private static final Pattern avPattern = Pattern.compile("av\\d{1,10}");
-    private static final Pattern cvPattern = Pattern.compile("cv\\d{1,10}");
     public static void setLink(TextView... textViews) {
         if (!SharedPreferencesUtil.getBoolean(SharedPreferencesUtil.LINK_ENABLE, true)) return;
         for (TextView textView : textViews) {
@@ -154,33 +160,33 @@ public class ToolsUtil {
             while (urlMatcher.find()) {
                 int start = urlMatcher.start();
                 int end = urlMatcher.end();
-                spannableString.setSpan(new LinkClickableSpan(text.substring(start, end), LinkClickableSpan.TYPE_WEB_URL),
+                spannableString.setSpan(new LinkClickableSpan(text.substring(start, end), TYPE_WEB_URL),
                         start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
 
             Matcher matcher;
 
-            matcher = bvPattern.matcher(text);
+            matcher = BV_PATTERN.matcher(text);
             while (matcher.find()) {
                 int start = matcher.start();
                 int end = matcher.end();
-                spannableString.setSpan(new LinkClickableSpan(text.substring(start, end), LinkClickableSpan.TYPE_BVID),
+                spannableString.setSpan(new LinkClickableSpan(text.substring(start, end), TYPE_BVID),
                         start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
 
-            matcher = avPattern.matcher(text);
+            matcher = AV_PATTERN.matcher(text);
             while (matcher.find()) {
                 int start = matcher.start();
                 int end = matcher.end();
-                spannableString.setSpan(new LinkClickableSpan(text.substring(start, end), LinkClickableSpan.TYPE_AVID),
+                spannableString.setSpan(new LinkClickableSpan(text.substring(start, end), TYPE_AVID),
                         start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
 
-            matcher = cvPattern.matcher(text);
+            matcher = CV_PATTERN.matcher(text);
             while (matcher.find()) {
                 int start = matcher.start();
                 int end = matcher.end();
-                spannableString.setSpan(new LinkClickableSpan(text.substring(start, end), LinkClickableSpan.TYPE_CVID),
+                spannableString.setSpan(new LinkClickableSpan(text.substring(start, end), TYPE_CVID),
                         start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
 
@@ -205,7 +211,7 @@ public class ToolsUtil {
                 while (matcher.find()) {
                     int start = matcher.start();
                     int end = matcher.end();
-                    spannableString.setSpan(new LinkClickableSpan(text.substring(start, end), LinkClickableSpan.TYPE_USER, String.valueOf(val)),
+                    spannableString.setSpan(new LinkClickableSpan(text.substring(start, end), TYPE_USER, String.valueOf(val)),
                             start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
             }
@@ -223,7 +229,7 @@ public class ToolsUtil {
             SpannableString spannableString = new SpannableString(textView.getText());
 
             for (At at : ats) {
-                spannableString.setSpan(new LinkClickableSpan(text.substring(at.textStartIndex, at.textEndIndex), LinkClickableSpan.TYPE_USER, String.valueOf(at.rid)),
+                spannableString.setSpan(new LinkClickableSpan(text.substring(at.textStartIndex, at.textEndIndex), TYPE_USER, String.valueOf(at.rid)),
                         at.textStartIndex, at.textEndIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
 
@@ -234,11 +240,6 @@ public class ToolsUtil {
 
 
     private static class LinkClickableSpan extends ClickableSpan {
-        public static final int TYPE_USER = -1;
-        public static final int TYPE_WEB_URL = 0;
-        public static final int TYPE_BVID = 1;
-        public static final int TYPE_AVID = 2;
-        public static final int TYPE_CVID = 3;
         private final String text;
         /**
          * 真实值
@@ -263,7 +264,7 @@ public class ToolsUtil {
                     widget.getContext().startActivity(new Intent(widget.getContext(), UserInfoActivity.class).putExtra("mid", Long.parseLong(val)));
                     break;
                 case TYPE_WEB_URL:
-                    handleWebURL(widget.getContext(), text);
+                    LinkUrlUtil.handleWebURL(widget.getContext(), text);
                     break;
                 case TYPE_BVID:
                     widget.getContext().startActivity(new Intent(widget.getContext(), VideoInfoActivity.class).putExtra("bvid", text));
@@ -275,92 +276,6 @@ public class ToolsUtil {
                     widget.getContext().startActivity(new Intent(widget.getContext(), ArticleInfoActivity.class).putExtra("cvid", Long.parseLong(text.replace("cv", ""))));
                     break;
             }
-        }
-
-        private void handleWebURL(Context context, String text) {
-            try {
-                text = (text.startsWith("http://") || text.startsWith("https://") ? text : "http://" + text);
-                // 很傻逼的一系列解析
-                URL url = new URL(text);
-                String path = url.getPath();
-                int index = path.indexOf('?');
-                if (index != -1) {
-                    path = path.substring(0, index);
-                }
-                String domain = url.getHost();
-                if (domain.equals("b23.tv")) {
-                    handleShortUrl(context, text);
-                    return;
-                }
-                if (domain.matches(".*\\.bilibili\\.com$")) {
-                    if (!path.isEmpty()) {
-                        String lastPathItem = path.replaceAll(".*/([^/]+)/?$", "$1");
-                        Pair<String, Integer> parse = parseId(lastPathItem);
-                        if (parse != null) {
-                            String val = parse.first;
-                            int type = parse.second;
-                            switch (type) {
-                                case TYPE_BVID:
-                                    context.startActivity(new Intent(context, VideoInfoActivity.class).putExtra("bvid", val));
-                                    return;
-                                case TYPE_AVID:
-                                    context.startActivity(new Intent(context, VideoInfoActivity.class).putExtra("aid", Long.parseLong(val.replace("av", ""))));
-                                    return;
-                                case TYPE_CVID:
-                                    context.startActivity(new Intent(context, ArticleInfoActivity.class).putExtra("cvid", Long.parseLong(val.replace("cv", ""))));
-                                    return;
-                            }
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            try {
-                context.startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(text)));
-            } catch (ActivityNotFoundException e) {
-                MsgUtil.toast("没有可处理此链接的应用！", context);
-            } catch (Throwable th) {
-                MsgUtil.err(th, context);
-            }
-        }
-
-        private void handleShortUrl(Context context, String url) {
-            CenterThreadPool.run(() -> {
-                try {
-                    Response response = NetWorkUtil.get(url, NetWorkUtil.webHeaders, location -> handleWebURL(context, location));
-                    ResponseBody body;
-                    if (response.code() == 200 && (body = response.body()) != null) {
-                        JSONObject json = new JSONObject(body.string());
-                        if (json.has("code") && json.getInt("code") == -404) {
-                            CenterThreadPool.runOnUiThread(() -> MsgUtil.toast("啥都木有~", context));
-                        }
-                    }
-                } catch (IOException | JSONException e) {
-                    CenterThreadPool.runOnUiThread(() -> MsgUtil.toast("解析失败！", context));
-                }
-            });
-        }
-
-        private Pair<String, Integer> parseId(String lastPathItem) {
-            Matcher matcher;
-
-            matcher = bvPattern.matcher(lastPathItem);
-            if (matcher.find()) {
-                return new Pair<>(matcher.group(), TYPE_BVID);
-            }
-
-            matcher = avPattern.matcher(lastPathItem);
-            if (matcher.find()) {
-                return new Pair<>(matcher.group(), TYPE_AVID);
-            }
-
-            matcher = cvPattern.matcher(lastPathItem);
-            if (matcher.find()) {
-                return new Pair<>(matcher.group(), TYPE_CVID);
-            }
-
-            return null;
         }
 
         @Override
