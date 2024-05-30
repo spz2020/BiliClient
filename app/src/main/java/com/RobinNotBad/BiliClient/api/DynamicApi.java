@@ -372,6 +372,9 @@ public class DynamicApi {
                             Pair<Integer, Integer> indexs = StringUtil.appendString(dynamic_content, rich_text_node.getString("text"));
                             ats.add(new At(rich_text_node.getLong("rid"), indexs.first, indexs.second));
                             break;
+                        case "RICH_TEXT_NODE_TYPE_WEB":
+                            dynamic_content.append(rich_text_node.getString("orig_text"));
+                            break;
                         case "RICH_TEXT_NODE_TYPE_TEXT":
                         default:
                             dynamic_content.append(rich_text_node.getString("text"));

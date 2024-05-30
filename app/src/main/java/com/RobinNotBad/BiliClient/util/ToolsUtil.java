@@ -12,6 +12,7 @@ import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.style.ClickableSpan;
+import android.util.Log;
 import android.util.Pair;
 import android.util.Patterns;
 import android.view.MotionEvent;
@@ -24,12 +25,19 @@ import com.RobinNotBad.BiliClient.activity.user.info.UserInfoActivity;
 import com.RobinNotBad.BiliClient.activity.video.info.VideoInfoActivity;
 import com.RobinNotBad.BiliClient.model.At;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 //2023-07-25
 
@@ -255,7 +263,7 @@ public class ToolsUtil {
                     widget.getContext().startActivity(new Intent(widget.getContext(), UserInfoActivity.class).putExtra("mid", Long.parseLong(val)));
                     break;
                 case TYPE_WEB_URL:
-                    handleWebURL(widget.getContext());
+                    handleWebURL(widget.getContext(), text);
                     break;
                 case TYPE_BVID:
                     widget.getContext().startActivity(new Intent(widget.getContext(), VideoInfoActivity.class).putExtra("bvid", text));
@@ -269,8 +277,9 @@ public class ToolsUtil {
             }
         }
 
-        private void handleWebURL(Context context) {
+        private void handleWebURL(Context context, String text) {
             try {
+                text = (text.startsWith("http://") || text.startsWith("https://") ? text : "http://" + text);
                 // 很傻逼的一系列解析
                 URL url = new URL(text);
                 String path = url.getPath();
@@ -279,6 +288,10 @@ public class ToolsUtil {
                     path = path.substring(0, index);
                 }
                 String domain = url.getHost();
+                if (domain.equals("b23.tv")) {
+                    handleShortUrl(context, text);
+                    return;
+                }
                 if (domain.matches(".*\\.bilibili\\.com$")) {
                     if (!path.isEmpty()) {
                         String lastPathItem = path.replaceAll(".*/([^/]+)/?$", "$1");
@@ -304,12 +317,29 @@ public class ToolsUtil {
                 e.printStackTrace();
             }
             try {
-                context.startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse((text.startsWith("http://") || text.startsWith("https://") ? text : "http://" + text))));
+                context.startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(text)));
             } catch (ActivityNotFoundException e) {
                 MsgUtil.toast("没有可处理此链接的应用！", context);
             } catch (Throwable th) {
                 MsgUtil.err(th, context);
             }
+        }
+
+        private void handleShortUrl(Context context, String url) {
+            CenterThreadPool.run(() -> {
+                try {
+                    Response response = NetWorkUtil.get(url, NetWorkUtil.webHeaders, location -> handleWebURL(context, location));
+                    ResponseBody body;
+                    if (response.code() == 200 && (body = response.body()) != null) {
+                        JSONObject json = new JSONObject(body.string());
+                        if (json.has("code") && json.getInt("code") == -404) {
+                            CenterThreadPool.runOnUiThread(() -> MsgUtil.toast("啥都木有~", context));
+                        }
+                    }
+                } catch (IOException | JSONException e) {
+                    CenterThreadPool.runOnUiThread(() -> MsgUtil.toast("解析失败！", context));
+                }
+            });
         }
 
         private Pair<String, Integer> parseId(String lastPathItem) {
