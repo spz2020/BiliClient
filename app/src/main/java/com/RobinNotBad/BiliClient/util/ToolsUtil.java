@@ -34,6 +34,8 @@ import com.RobinNotBad.BiliClient.activity.user.info.UserInfoActivity;
 import com.RobinNotBad.BiliClient.activity.video.info.VideoInfoActivity;
 import com.RobinNotBad.BiliClient.model.At;
 
+import com.RobinNotBad.BiliClient.R;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -139,13 +141,11 @@ public class ToolsUtil {
     }
 
     public static void setCopy(TextView textView, Context context){
-        setCopy(textView, context, null);
+        setCopy(textView, context, null); //直接传getText()会导致文本变化后点击不了
     }
 
     public static void setCopy(Context context, TextView... textViews){
-        for (TextView textView : textViews) {
-            setCopy(textView, context, null);
-        }
+        for (TextView textView : textViews) setCopy(textView, context);
     }
 
     public static void setLink(TextView... textViews) {
@@ -326,5 +326,12 @@ public class ToolsUtil {
             }
             return false;
         }
+    }
+
+    public static String getUpdateLog(Context context){
+        String str = "";
+        String[] logItems = context.getResources().getStringArray(R.array.update_log_items);
+        for(int i = 0;i < logItems.length;i++) str += (i+1) + "." + logItems[i] + "\n";
+        return str;
     }
 }

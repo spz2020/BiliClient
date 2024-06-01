@@ -94,7 +94,8 @@ public class ReplyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @SuppressLint("SetTextI18n")
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int p) {
+        int position = holder.getAdapterPosition();
         if(holder instanceof WriteReply){
             WriteReply writeReply = (WriteReply) holder;
             writeReply.write_reply.setOnClickListener(view -> {
@@ -260,7 +261,6 @@ public class ReplyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             View.OnClickListener onDeleteClick = view -> {
                 MsgUtil.toast("长按删除", context);
             };
-            replyHolder.item_reply_delete_img.setOnClickListener(onDeleteClick);
             replyHolder.item_reply_delete.setOnClickListener(onDeleteClick);
             View.OnLongClickListener onDeleteLongClick = new View.OnLongClickListener() {
                 private int longClickPosition = -1;
@@ -305,10 +305,8 @@ public class ReplyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     return true;
                 }
             };
-            replyHolder.item_reply_delete_img.setOnLongClickListener(onDeleteLongClick);
             replyHolder.item_reply_delete.setOnLongClickListener(onDeleteLongClick);
             if (!(replyList.get(realPosition).sender.mid == SharedPreferencesUtil.getLong(SharedPreferencesUtil.mid,0)) || replyList.get(realPosition).sender.mid == 0 || replyList.get(realPosition).forceDelete) {
-                replyHolder.item_reply_delete_img.setVisibility(View.GONE);
                 replyHolder.item_reply_delete.setVisibility(View.GONE);
                 CenterThreadPool.run(() -> {
                     try {
@@ -332,10 +330,7 @@ public class ReplyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                                 break;
                         }
                         if (isManager) {
-                            ((Activity) context).runOnUiThread(() -> {
-                                replyHolder.item_reply_delete_img.setVisibility(View.VISIBLE);
-                                replyHolder.item_reply_delete.setVisibility(View.VISIBLE);
-                            });
+                            ((Activity) context).runOnUiThread(() -> replyHolder.item_reply_delete.setVisibility(View.VISIBLE));
                         }
                     } catch (Exception e) {
                         ((Activity) context).runOnUiThread(() -> MsgUtil.err(e, context));
@@ -385,7 +380,7 @@ public class ReplyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     public static class ReplyHolder extends RecyclerView.ViewHolder{
-        ImageView replyAvatar, dislikeBtn, item_reply_delete_img;
+        ImageView replyAvatar, dislikeBtn;
         CustomListView childReplies;
         TextView message,userName,pubDate,childCount,likeCount,replyBtn,upLiked,imageCount, item_reply_delete;
         LinearLayout childReplyCard;
@@ -408,7 +403,6 @@ public class ReplyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             childReplyCard = itemView.findViewById(R.id.repliesCard);
             imageCount = itemView.findViewById(R.id.imageCount);
             imageCard = itemView.findViewById(R.id.imageCard);
-            item_reply_delete_img = itemView.findViewById(R.id.item_reply_delete_img);
             item_reply_delete = itemView.findViewById(R.id.item_reply_delete);
         }
     }

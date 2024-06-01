@@ -15,18 +15,18 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-                android:id="@+id/pageName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="3dp"
-                android:layout_marginStart="8dp"
-                android:gravity="center"
-                android:text="设置"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:drawableStartCompat="@drawable/arrow_down"/>
+            android:id="@+id/pageName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="3dp"
+            android:layout_marginStart="8dp"
+            android:gravity="center"
+            android:text="设置"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:drawableStartCompat="@drawable/arrow_down"/>
 
         <TextClock
             android:id="@+id/timeText"
@@ -70,15 +70,15 @@
                 android:visibility="gone">
 
                 <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="35sp"
-                        android:layout_marginHorizontal="8dp"
-                        android:gravity="center_vertical"
-                        android:text="你还木有登录哦！点击这里登录"
-                        android:textAlignment="textStart"
-                        android:textSize="13sp"
-                        android:visibility="visible"
-                        tools:ignore="RtlCompat" app:drawableEndCompat="@drawable/arrow_forward"/>
+                    android:layout_width="match_parent"
+                    android:layout_height="35sp"
+                    android:layout_marginHorizontal="8dp"
+                    android:gravity="center_vertical"
+                    android:text="你还木有登录哦！点击这里登录"
+                    android:textAlignment="textStart"
+                    android:textSize="13sp"
+                    android:visibility="visible"
+                    tools:ignore="RtlCompat" app:drawableEndCompat="@drawable/arrow_forward"/>
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
@@ -134,14 +134,14 @@
                         app:layout_constraintStart_toEndOf="@+id/playerSetting_icon"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <TextView
+                    <com.RobinNotBad.BiliClient.view.MarqueeTextView
                         android:id="@+id/playerSetting_desc"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_marginBottom="10dp"
-                        android:lines="1"
-                        android:text="切换播放器、清晰度"
+                        android:singleLine="true"
+                        android:text="切换播放器、视频清晰度"
                         android:textColor="#fff"
                         android:textSize="11sp"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -151,7 +151,7 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
-            
+
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/clientPlayerSetting"
                 android:layout_width="match_parent"
@@ -205,14 +205,14 @@
                         app:layout_constraintStart_toEndOf="@+id/clientPlayerSetting_icon"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <TextView
+                    <com.RobinNotBad.BiliClient.view.MarqueeTextView
                         android:id="@+id/clientPlayerSetting_desc"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_marginBottom="10dp"
-                        android:lines="1"
-                        android:text="哔哩终端内置播放器"
+                        android:singleLine="true"
+                        android:text="哔哩终端内置播放器设置项"
                         android:textColor="#fff"
                         android:textSize="11sp"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -222,7 +222,7 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
-            
+
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/uiSetting"
                 android:layout_width="match_parent"
@@ -275,13 +275,13 @@
                         app:layout_constraintStart_toEndOf="@+id/uiSetting_icon"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <TextView
+                    <com.RobinNotBad.BiliClient.view.MarqueeTextView
                         android:id="@+id/uiSetting_desription"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_marginBottom="10dp"
-                        android:lines="1"
+                        android:singleLine="true"
                         android:text="界面大小、边距等"
                         android:textColor="#fff"
                         android:textSize="11sp"
@@ -346,14 +346,14 @@
                         app:layout_constraintStart_toEndOf="@+id/prefSetting_icon"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <TextView
+                    <com.RobinNotBad.BiliClient.view.MarqueeTextView
                         android:id="@+id/prefSetting_desription"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_marginBottom="10dp"
-                        android:lines="1"
-                        android:text="或许对你有帮助"
+                        android:singleLine="true"
+                        android:text="寻找某些功能时看看这里吧"
                         android:textColor="#fff"
                         android:textSize="11sp"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -488,14 +488,14 @@
                         app:layout_constraintStart_toEndOf="@+id/about_icon"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <TextView
+                    <com.RobinNotBad.BiliClient.view.MarqueeTextView
                         android:id="@+id/about_desription"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_marginBottom="10dp"
-                        android:lines="1"
-                        android:text="作者的话、联系方式"
+                        android:singleLine="true"
+                        android:text="版本号、开发团队、联系方式等"
                         android:textColor="#fff"
                         android:textSize="11sp"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -512,14 +512,14 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="35sp"
-                        android:layout_marginHorizontal="8dp"
-                        android:gravity="center_vertical"
-                        android:text="查看公告"
-                        android:textAlignment="textStart"
-                        android:textSize="13sp"
-                        tools:ignore="RtlCompat" app:drawableEndCompat="@drawable/arrow_forward"/>
+                    android:layout_width="match_parent"
+                    android:layout_height="35sp"
+                    android:layout_marginHorizontal="8dp"
+                    android:gravity="center_vertical"
+                    android:text="查看公告"
+                    android:textAlignment="textStart"
+                    android:textSize="13sp"
+                    tools:ignore="RtlCompat" app:drawableEndCompat="@drawable/arrow_forward"/>
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
@@ -548,7 +548,7 @@
                     android:layout_height="35sp"
                     android:layout_marginHorizontal="8dp"
                     android:gravity="center_vertical"
-                    android:text="重新查看使用教程"
+                    android:text="重置教程完成进度"
                     android:textAlignment="textStart"
                     android:textSize="13sp"
                     tools:ignore="RtlCompat" />

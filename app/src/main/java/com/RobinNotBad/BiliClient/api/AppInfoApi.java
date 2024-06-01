@@ -2,6 +2,7 @@ package com.RobinNotBad.BiliClient.api;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 
 import com.RobinNotBad.BiliClient.BiliTerminal;
@@ -12,6 +13,7 @@ import com.RobinNotBad.BiliClient.util.MsgUtil;
 import com.RobinNotBad.BiliClient.util.NetWorkUtil;
 import com.RobinNotBad.BiliClient.util.SharedPreferencesUtil;
 
+import com.RobinNotBad.BiliClient.util.ToolsUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -27,7 +29,7 @@ public class AppInfoApi {
             checkAnnouncement(context);
 
             if (SharedPreferencesUtil.getInt("app_version_last", 0) < version) {
-                MsgUtil.showText(context, "更新公告", context.getString(R.string.update_log));
+                MsgUtil.showText(context, "更新公告", context.getResources().getString(R.string.update_tip) + "\n\n更新日志：\n" + ToolsUtil.getUpdateLog(context));
                 SharedPreferencesUtil.putInt("app_version_last", version);
             }
 
@@ -100,5 +102,24 @@ public class AppInfoApi {
             list.add(announcement);
         }
         return list;
+    }
+
+    public static boolean uploadStack(String stack){
+        //上传崩溃堆栈
+        try {
+            String url = "http://api.biliterminal.cn/terminal/upload/stack";
+
+            JSONObject post_data = new JSONObject();
+            post_data.put("stack",stack);
+            post_data.put("device_sdk_version", Build.VERSION.SDK_INT);
+            post_data.put("device_product",Build.PRODUCT);
+            post_data.put("device_brand",Build.BRAND);
+
+            NetWorkUtil.post(url,post_data.toString(),customHeaders);
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
     }
 }
