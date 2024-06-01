@@ -36,7 +36,7 @@ public class SettingMainActivity extends InstanceActivity {
             login.setOnClickListener(view -> {
                 Intent intent = new Intent();
                 if(Build.VERSION.SDK_INT>=19) {
-                    intent.setClass(this, LoginActivity.class);   //去扫码登录页面
+                    intent.setClass(this, QRLoginActivity.class);   //去扫码登录页面
                 }
                 else{
                     intent.setClass(this, SpecialLoginActivity.class);   //4.4以下系统去特殊登录页面
@@ -147,12 +147,9 @@ public class SettingMainActivity extends InstanceActivity {
 
 
         MaterialCardView test = findViewById(R.id.test);    //用于测试
-        test.setVisibility(View.GONE);
+//        test.setVisibility(View.GONE);
         test.setOnClickListener(view -> {
-<<<<<<< HEAD
-//            throw new OutOfMemoryError("测试");
-=======
->>>>>>> huanli233/develop
+            throw new OutOfMemoryError("测试");
             //MsgUtil.toast("喵~",this)
             //MsgUtil.showText(this,"test","你干嘛~哈哈~哎哟<extra_insert>{\"type\":\"video\",\"content\":\"BV1Bo4y1c7gW\",\"title\":\"纳西妲纳西妲纳西妲嘿嘿嘿\"}");
         });
