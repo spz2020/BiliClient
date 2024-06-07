@@ -13,7 +13,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.RobinNotBad.BiliClient.BiliTerminal;
+import com.RobinNotBad.BiliClient.BuildConfig;
 import com.RobinNotBad.BiliClient.R;
 import com.RobinNotBad.BiliClient.activity.base.BaseActivity;
 import com.RobinNotBad.BiliClient.activity.user.info.UserInfoActivity;
@@ -123,6 +123,6 @@ public class AboutActivity extends BaseActivity {
             });
         });
 
-        if(!BiliTerminal.IS_DEBUG_VERSION) findViewById(R.id.debug_tip).setVisibility(View.GONE);
+        if(!BuildConfig.BETA) findViewById(R.id.debug_tip).setVisibility(View.GONE);
     }
 }
