@@ -159,9 +159,9 @@ public class CollectionInfoActivity extends BaseActivity {
                         .apply(RequestOptions.bitmapTransform(new RoundedCorners(ToolsUtil.dp2px(5,context))).sizeMultiplier(0.85f).dontAnimate())
                         .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .into(collectionInfoHolder.cover);
-                collectionInfoHolder.cover.setOnClickListener(view -> {
-                       context.startActivity(new Intent(context, ImageViewerActivity.class).putExtra("imageList", new ArrayList<>(Collections.singletonList(collection.cover))));
-                   });
+                collectionInfoHolder.cover.setOnClickListener(view -> context.startActivity(new Intent(context, ImageViewerActivity.class).putExtra("imageList", new ArrayList<>(Collections.singletonList(collection.cover)))));
+                ToolsUtil.setCopy(context, collectionInfoHolder.name, collectionInfoHolder.desc);
+                ToolsUtil.setLink(collectionInfoHolder.desc);
             }
         }
 
