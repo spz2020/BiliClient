@@ -47,8 +47,10 @@ public class CollectionInfoActivity extends RefreshListActivity {
         setPageName("合集详情");
 
         Collection collection = (Collection) getIntent().getSerializableExtra("collection");
-        if (collection == null) {
-            MsgUtil.toast( "合集不存在", this);
+        int season_id = getIntent().getIntExtra("season_id", -1);
+        long mid = getIntent().getLongExtra("mid", -1);
+        if (collection == null/* && (season_id == -1 || mid == -1)*/) {
+            MsgUtil.toast("合集不存在", this);
             finish();
             return;
         }
@@ -89,7 +91,7 @@ public class CollectionInfoActivity extends RefreshListActivity {
         final List<VideoCard> data;
         final PreInflateHelper preInflateHelper;
 
-        public CardAdapter(Context context, Collection collection, RecyclerView recyclerView){
+        public CardAdapter(Context context, Collection collection, RecyclerView recyclerView) {
             this.context = context;
             this.data = collection.cards;
             this.collection = collection;
@@ -132,7 +134,7 @@ public class CollectionInfoActivity extends RefreshListActivity {
                         .transition(GlideUtil.getTransitionOptions())
                         .placeholder(R.mipmap.placeholder)
                         .format(DecodeFormat.PREFER_RGB_565)
-                        .apply(RequestOptions.bitmapTransform(new RoundedCorners(ToolsUtil.dp2px(5,context))).sizeMultiplier(0.85f).dontAnimate())
+                        .apply(RequestOptions.bitmapTransform(new RoundedCorners(ToolsUtil.dp2px(5, context))).sizeMultiplier(0.85f).dontAnimate())
                         .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .into(collectionInfoHolder.cover);
                 collectionInfoHolder.cover.setOnClickListener(view -> context.startActivity(new Intent(context, ImageViewerActivity.class).putExtra("imageList", new ArrayList<>(Collections.singletonList(collection.cover)))));
@@ -143,7 +145,7 @@ public class CollectionInfoActivity extends RefreshListActivity {
 
         @Override
         public int getItemCount() {
-            return data.size()+1;
+            return data.size() + 1;
         }
 
         static class CollectionInfoHolder extends RecyclerView.ViewHolder {
@@ -151,6 +153,7 @@ public class CollectionInfoActivity extends RefreshListActivity {
             final TextView desc;
             final TextView playTimes;
             final ImageView cover;
+
             public CollectionInfoHolder(@NonNull View itemView) {
                 super(itemView);
                 this.name = itemView.findViewById(R.id.name);
@@ -170,7 +173,7 @@ public class CollectionInfoActivity extends RefreshListActivity {
         final List<Integer> types = new ArrayList<>();
         final PreInflateHelper preInflateHelper;
 
-        public SectionAdapter(Context context, Collection collection, RecyclerView recyclerView){
+        public SectionAdapter(Context context, Collection collection, RecyclerView recyclerView) {
             this.context = context;
             this.data = collection.sections;
             this.collection = collection;
@@ -253,12 +256,10 @@ public class CollectionInfoActivity extends RefreshListActivity {
                         .transition(GlideUtil.getTransitionOptions())
                         .placeholder(R.mipmap.placeholder)
                         .format(DecodeFormat.PREFER_RGB_565)
-                        .apply(RequestOptions.bitmapTransform(new RoundedCorners(ToolsUtil.dp2px(5,context))).sizeMultiplier(0.85f).dontAnimate())
+                        .apply(RequestOptions.bitmapTransform(new RoundedCorners(ToolsUtil.dp2px(5, context))).sizeMultiplier(0.85f).dontAnimate())
                         .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .into(collectionInfoHolder.cover);
                 collectionInfoHolder.cover.setOnClickListener(view -> context.startActivity(new Intent(context, ImageViewerActivity.class).putExtra("imageList", new ArrayList<>(Collections.singletonList(collection.cover)))));
-                ToolsUtil.setCopy(context, collectionInfoHolder.name, collectionInfoHolder.desc);
-                ToolsUtil.setLink(collectionInfoHolder.desc);
             }
         }
 
@@ -274,6 +275,7 @@ public class CollectionInfoActivity extends RefreshListActivity {
 
         static class SectionHolder extends RecyclerView.ViewHolder {
             private final TextView item;
+
             public SectionHolder(@NonNull TextView itemView) {
                 super(itemView);
                 this.item = itemView;
@@ -286,6 +288,7 @@ public class CollectionInfoActivity extends RefreshListActivity {
             final TextView desc;
             final TextView playTimes;
             final ImageView cover;
+
             public CollectionInfoHolder(@NonNull View itemView) {
                 super(itemView);
                 this.name = itemView.findViewById(R.id.name);

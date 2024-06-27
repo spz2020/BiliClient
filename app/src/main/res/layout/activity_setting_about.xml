@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="match_parent"
@@ -27,7 +26,7 @@
             android:id="@+id/pageName"
             android:text="关于"
             android:textStyle="bold"
-            app:drawableStartCompat="@drawable/arrow_back"/>
+            app:drawableStartCompat="@drawable/arrow_back" />
 
         <TextClock
             android:layout_height="wrap_content"
@@ -157,7 +156,7 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <include layout="@layout/cell_divider"/>
+            <include layout="@layout/cell_divider" />
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
@@ -173,7 +172,7 @@
                     android:textSize="12sp" />
 
             </com.google.android.material.card.MaterialCardView>
-            
+
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/author_words"
                 android:layout_marginTop="6dp"
@@ -206,18 +205,18 @@
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
-            
+
             <com.google.android.material.card.MaterialCardView
                 android:layout_marginTop="6dp"
-                 android:layout_height="wrap_content"
-                 android:layout_width="match_parent">
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent">
 
                 <LinearLayout
-                     android:layout_height="wrap_content"
-                     android:layout_width="match_parent"
-                     android:paddingVertical="6dp"
-                     android:paddingHorizontal="4dp"
-                     android:orientation="vertical">
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:paddingVertical="6dp"
+                    android:paddingHorizontal="4dp"
+                    android:orientation="vertical">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -255,7 +254,7 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <include layout="@layout/cell_divider"/>
+            <include layout="@layout/cell_divider" />
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/sponsor_list"
@@ -272,7 +271,7 @@
                     android:textAlignment="textStart"
                     android:textSize="13sp"
                     tools:ignore="RtlCompat"
-                    app:drawableEndCompat="@drawable/arrow_forward"/>
+                    app:drawableEndCompat="@drawable/arrow_forward" />
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
@@ -641,7 +640,7 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <include layout="@layout/cell_divider"/>
+            <include layout="@layout/cell_divider" />
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_height="wrap_content"
