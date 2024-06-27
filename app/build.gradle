@@ -21,7 +21,7 @@ android {
         minSdk 17
         //noinspection ExpiredTargetSdkVersion
         targetSdk 26
-        versionCode 20240616
+        versionCode 20240627
         versionName "2.6.1"
 
         if (betaVer) {
@@ -38,6 +38,20 @@ android {
         }
     }
 
+    signingConfigs {
+        release {
+            def localProps = project.rootProject.file("local.properties")
+            if (localProps.exists() && new Properties() {{
+                load(localProps.newDataInputStream())
+            }}.hasProperty("KEY_PATH")) {
+                storeFile file(pro.getProperty("KEY_PATH") != null ? pro.getProperty("KEY_PATH") : "key.jks")
+                storePassword pro.getProperty("KEY_PASSWORD")
+                keyAlias pro.getProperty("ALIAS_NAME")
+                keyPassword pro.getProperty("ALIAS_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
             buildConfigField "boolean", "BETA", String.valueOf(betaVer)
@@ -45,6 +59,12 @@ android {
             shrinkResources true
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            def localProps = project.rootProject.file("local.properties")
+            if (localProps.exists() && new Properties() {{
+                load(localProps.newDataInputStream())
+            }}.hasProperty("KEY_PATH")) {
+                signingConfig signingConfigs.release
+            }
         }
         debug {
             buildConfigField "boolean", "BETA", String.valueOf(betaVer)
